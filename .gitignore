@@ -1,0 +1,30 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+*.rsuser
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+# Generated Metro 2 files
+*.dat
+
+# Local database files
+*.mdf
+*.ldf

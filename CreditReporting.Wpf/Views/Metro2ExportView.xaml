@@ -1,0 +1,60 @@
+<UserControl x:Class="CreditReporting.Wpf.Views.Metro2ExportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="From" />
+                <DatePicker SelectedDate="{Binding FromDate}" Width="140" />
+            </StackPanel>
+            <StackPanel Margin="0,0,14,0">
+                <TextBlock Text="To" />
+                <DatePicker SelectedDate="{Binding ToDate}" Width="140" />
+            </StackPanel>
+            <Button Content="Preview" VerticalAlignment="Bottom"
+                    Command="{Binding PreviewCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+            <Button Content="Generate File…" VerticalAlignment="Bottom"
+                    Command="{Binding GenerateCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" Style="{StaticResource StatusText}" />
+
+        <UniformGrid Grid.Row="2" Rows="1" Margin="0,10,0,0" HorizontalAlignment="Left" Width="420"
+                     Visibility="{Binding HasPreview, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="{Binding RecordCount}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Records" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding ErrorCount}" Style="{StaticResource MetricValue}" Foreground="#C0392B" />
+                <TextBlock Text="Errors" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding WarningCount}" Style="{StaticResource MetricValue}" Foreground="#B7770D" />
+                <TextBlock Text="Warnings" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+        </UniformGrid>
+
+        <DockPanel Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock DockPanel.Dock="Top" Text="Validation Issues" Style="{StaticResource SectionHeader}" />
+            <DataGrid ItemsSource="{Binding Issues}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Record #" Binding="{Binding RecordNumber}" Width="Auto" />
+                    <DataGridTextColumn Header="Account" Binding="{Binding AccountNumberMasked}" Width="Auto" />
+                    <DataGridTextColumn Header="Field" Binding="{Binding FieldName}" Width="Auto" />
+                    <DataGridTextColumn Header="Severity" Binding="{Binding Severity}" Width="Auto" />
+                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,151 @@
+<UserControl x:Class="CreditReporting.Wpf.Views.CreditReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="1.5*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding StatusMessage}" Style="{StaticResource StatusText}" Margin="0,0,0,6" />
+
+        <!-- Customer info header + score display -->
+        <Border Grid.Row="1" Background="#EEF3FB" CornerRadius="4" Padding="12"
+                Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="{Binding Report.Customer.FullName}" FontSize="20" FontWeight="Bold" />
+                    <TextBlock>
+                        <Run Text="{Binding Report.Customer.AddressLine1, Mode=OneWay}" />
+                        <Run Text=" · " />
+                        <Run Text="{Binding Report.Customer.CityStateZip, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="DOB: " /><Run Text="{Binding Report.Customer.DateOfBirth, Mode=OneWay, StringFormat=d}" />
+                        <Run Text="   SSN: " /><Run Text="{Binding Report.Customer.SsnMasked, Mode=OneWay}" />
+                        <Run Text="   Phone: " /><Run Text="{Binding Report.Customer.Phone, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+
+                <Border Grid.Column="1" Background="#1F3864" CornerRadius="6" Padding="18,8" MinWidth="130">
+                    <StackPanel>
+                        <TextBlock Text="{Binding LatestScore.Score}" FontSize="34" FontWeight="Bold"
+                                   Foreground="White" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding LatestScore.Bureau}" Foreground="#CFE0FF"
+                                   FontSize="11" HorizontalAlignment="Center" />
+                        <TextBlock Foreground="#CFE0FF" FontSize="11" HorizontalAlignment="Center">
+                            <Run Text="{Binding LatestScore.ModelVersion, Mode=OneWay}" />
+                            <Run Text=" · " />
+                            <Run Text="{Binding LatestScore.ScoreDate, Mode=OneWay, StringFormat=d}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Summary strip -->
+        <UniformGrid Grid.Row="2" Rows="1" Margin="0,8,0,0"
+                     Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.TotalAccounts}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Total Accounts" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.OpenAccounts}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Open" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.TotalBalance, StringFormat=C0}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Total Balance" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.TotalPastDue, StringFormat=C0}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Past Due" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.DelinquentAccounts}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Delinquent" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.Utilization, StringFormat=P0}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Utilization" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Text="{Binding Report.Summary.HardInquiriesLast12Months}" Style="{StaticResource MetricValue}" />
+                <TextBlock Text="Hard Inquiries (12 mo)" Style="{StaticResource MetricLabel}" />
+            </StackPanel>
+        </UniformGrid>
+
+        <!-- Account summary table -->
+        <DockPanel Grid.Row="3" Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+            <TextBlock DockPanel.Dock="Top" Text="Accounts" Style="{StaticResource SectionHeader}" />
+            <DataGrid ItemsSource="{Binding Report.Accounts}" SelectedItem="{Binding SelectedAccount}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Creditor" Binding="{Binding CreditorName}" Width="*" />
+                    <DataGridTextColumn Header="Account #" Binding="{Binding AccountNumberMasked}" Width="Auto" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding AccountType}" Width="Auto" />
+                    <DataGridTextColumn Header="Portfolio" Binding="{Binding PortfolioType}" Width="Auto" />
+                    <DataGridTextColumn Header="ECOA" Binding="{Binding EcoaCode}" Width="Auto" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto" />
+                    <DataGridTextColumn Header="Opened" Binding="{Binding OpenDate, StringFormat=d}" Width="Auto" />
+                    <DataGridTextColumn Header="Limit" Binding="{Binding CreditLimit, StringFormat=C0}" Width="Auto" />
+                    <DataGridTextColumn Header="Balance" Binding="{Binding CurrentBalance, StringFormat=C0}" Width="Auto" />
+                    <DataGridTextColumn Header="Past Due" Binding="{Binding AmountPastDue, StringFormat=C0}" Width="Auto" />
+                    <DataGridTextColumn Header="History (24 mo)" Binding="{Binding PaymentHistoryProfile}" Width="Auto">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="Consolas" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <TextBlock Grid.Row="4" Style="{StaticResource SectionHeader}"
+                   Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+            <Run Text="Payment History: " /><Run Text="{Binding SelectedAccount.CreditorName, Mode=OneWay}" />
+            <Run Text=" " /><Run Text="{Binding SelectedAccount.AccountNumberMasked, Mode=OneWay}" />
+        </TextBlock>
+
+        <!-- Payment history + inquiries side by side -->
+        <Grid Grid.Row="5" Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <DataGrid Grid.Column="0" Margin="0,0,8,0"
+                      ItemsSource="{Binding SelectedAccount.PaymentHistory}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Date" Binding="{Binding PaymentDate, StringFormat=MMM yyyy}" Width="Auto" />
+                    <DataGridTextColumn Header="Balance" Binding="{Binding Balance, StringFormat=C2}" Width="*" />
+                    <DataGridTextColumn Header="Paid" Binding="{Binding AmountPaid, StringFormat=C2}" Width="*" />
+                    <DataGridTextColumn Header="Days Late" Binding="{Binding DaysLate}" Width="Auto" />
+                    <DataGridTextColumn Header="Rating" Binding="{Binding PaymentRating}" Width="Auto" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <DockPanel Grid.Column="1">
+                <TextBlock DockPanel.Dock="Top" Text="Inquiries" FontWeight="SemiBold" Margin="0,0,0,4" />
+                <DataGrid ItemsSource="{Binding Report.Inquiries}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Pulled By" Binding="{Binding PulledBy}" Width="*" />
+                        <DataGridTextColumn Header="Date" Binding="{Binding PulledDate, StringFormat=d}" Width="Auto" />
+                        <DataGridTextColumn Header="Type" Binding="{Binding InquiryType}" Width="Auto" />
+                        <DataGridTextColumn Header="Purpose" Binding="{Binding Purpose}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>
