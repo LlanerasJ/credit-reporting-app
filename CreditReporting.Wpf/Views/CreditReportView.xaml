@@ -1,6 +1,7 @@
-<UserControl x:Class="CreditReporting.Wpf.Views.CreditReportView"
+<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="CreditReporting.Wpf.Views.CreditReportView"
+             >
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -24,16 +25,8 @@
 
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="{Binding Report.Customer.FullName}" FontSize="20" FontWeight="Bold" />
-                    <TextBlock>
-                        <Run Text="{Binding Report.Customer.AddressLine1, Mode=OneWay}" />
-                        <Run Text=" · " />
-                        <Run Text="{Binding Report.Customer.CityStateZip, Mode=OneWay}" />
-                    </TextBlock>
-                    <TextBlock>
-                        <Run Text="DOB: " /><Run Text="{Binding Report.Customer.DateOfBirth, Mode=OneWay, StringFormat=d}" />
-                        <Run Text="   SSN: " /><Run Text="{Binding Report.Customer.SsnMasked, Mode=OneWay}" />
-                        <Run Text="   Phone: " /><Run Text="{Binding Report.Customer.Phone, Mode=OneWay}" />
-                    </TextBlock>
+                    <TextBlock><Run Text="{Binding Report.Customer.AddressLine1, Mode=OneWay}" /><Run Text=" "/><Run Text=" · " /><Run Text=" "/><Run Text="{Binding Report.Customer.CityStateZip, Mode=OneWay}" /></TextBlock>
+                    <TextBlock><Run Text="DOB: " /><Run Text="{Binding Report.Customer.DateOfBirth, Mode=OneWay, StringFormat=d}" /><Run Text=" "/><Run Text="   SSN: " /><Run Text="{Binding Report.Customer.SsnMasked, Mode=OneWay}" /><Run Text=" "/><Run Text="   Phone: " /><Run Text="{Binding Report.Customer.Phone, Mode=OneWay}" /></TextBlock>
                 </StackPanel>
 
                 <Border Grid.Column="1" Background="#1F3864" CornerRadius="6" Padding="18,8" MinWidth="130">
@@ -42,11 +35,7 @@
                                    Foreground="White" HorizontalAlignment="Center" />
                         <TextBlock Text="{Binding LatestScore.Bureau}" Foreground="#CFE0FF"
                                    FontSize="11" HorizontalAlignment="Center" />
-                        <TextBlock Foreground="#CFE0FF" FontSize="11" HorizontalAlignment="Center">
-                            <Run Text="{Binding LatestScore.ModelVersion, Mode=OneWay}" />
-                            <Run Text=" · " />
-                            <Run Text="{Binding LatestScore.ScoreDate, Mode=OneWay, StringFormat=d}" />
-                        </TextBlock>
+                        <TextBlock Foreground="#CFE0FF" FontSize="11" HorizontalAlignment="Center"><Run Text="{Binding LatestScore.ModelVersion, Mode=OneWay}" /><Run Text=" "/><Run Text=" · " /><Run Text=" "/><Run Text="{Binding LatestScore.ScoreDate, Mode=OneWay, StringFormat=d}" /></TextBlock>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -97,12 +86,13 @@
                     <DataGridTextColumn Header="ECOA" Binding="{Binding EcoaCode}" Width="Auto" />
                     <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto" />
                     <DataGridTextColumn Header="Opened" Binding="{Binding OpenDate, StringFormat=d}" Width="Auto" />
+                    <DataGridTextColumn Header="Closed" Binding="{Binding ClosedDate, StringFormat=d}" Width="Auto" />
                     <DataGridTextColumn Header="Limit" Binding="{Binding CreditLimit, StringFormat=C0}" Width="Auto" />
                     <DataGridTextColumn Header="Balance" Binding="{Binding CurrentBalance, StringFormat=C0}" Width="Auto" />
                     <DataGridTextColumn Header="Past Due" Binding="{Binding AmountPastDue, StringFormat=C0}" Width="Auto" />
                     <DataGridTextColumn Header="History (24 mo)" Binding="{Binding PaymentHistoryProfile}" Width="Auto">
                         <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
+                            <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="FontFamily" Value="Consolas" />
                             </Style>
                         </DataGridTextColumn.ElementStyle>
@@ -112,10 +102,7 @@
         </DockPanel>
 
         <TextBlock Grid.Row="4" Style="{StaticResource SectionHeader}"
-                   Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
-            <Run Text="Payment History: " /><Run Text="{Binding SelectedAccount.CreditorName, Mode=OneWay}" />
-            <Run Text=" " /><Run Text="{Binding SelectedAccount.AccountNumberMasked, Mode=OneWay}" />
-        </TextBlock>
+                   Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}"><Run Text="Payment History: " /><Run Text="{Binding SelectedAccount.CreditorName, Mode=OneWay}" /><Run Text=" "/><Run Text=" " /><Run Text="{Binding SelectedAccount.AccountNumberMasked, Mode=OneWay}" /></TextBlock>
 
         <!-- Payment history + inquiries side by side -->
         <Grid Grid.Row="5" Visibility="{Binding HasReport, Converter={StaticResource BoolToVis}}">
