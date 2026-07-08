@@ -34,7 +34,11 @@ public class CustomerRepository : ICustomerRepository
         _db.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, ct);
 
     public Task<Customer?> GetWithFullHistoryAsync(int id, CancellationToken ct = default) =>
+        // Split query: the customer has three sibling collections (accounts,
+        // inquiries, scores). Loading them in one statement produces a cartesian
+        // join, so fetch each with its own SELECT instead.
         _db.Customers.AsNoTracking()
+            .AsSplitQuery()
             .Include(c => c.Accounts).ThenInclude(a => a.PaymentHistory)
             .Include(c => c.Inquiries)
             .Include(c => c.Scores)
