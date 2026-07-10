@@ -24,11 +24,16 @@
             <TabItem Header="Credit Report">
                 <views:CreditReportView DataContext="{Binding Report}" />
             </TabItem>
-            <TabItem Header="Metro 2 Export">
+            <TabItem Header="Metro 2 Export"
+                     Visibility="{Binding Metro2ExportVisible, Converter={StaticResource BoolToVis}}">
                 <views:Metro2ExportView DataContext="{Binding Export}" />
             </TabItem>
-            <TabItem Header="Metro 2 Import / Preview">
+            <TabItem Header="Metro 2 Import / Preview"
+                     Visibility="{Binding Metro2ImportVisible, Converter={StaticResource BoolToVis}}">
                 <views:Metro2ImportView DataContext="{Binding Import}" />
+            </TabItem>
+            <TabItem Header="Settings">
+                <views:SettingsView DataContext="{Binding Settings}" />
             </TabItem>
         </TabControl>
     </DockPanel>

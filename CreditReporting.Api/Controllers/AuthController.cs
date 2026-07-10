@@ -27,4 +27,27 @@ public class AuthController : ControllerBase
             ? Unauthorized(new ProblemDetails { Title = "Invalid username or password." })
             : Ok(response);
     }
+
+    /// <summary>Changes the signed-in user's password after verifying the current one.</summary>
+    [HttpPost("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.CurrentPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
+            return BadRequest(new ProblemDetails { Title = "Current and new password are required." });
+        if (request.NewPassword.Length < 8)
+            return BadRequest(new ProblemDetails { Title = "New password must be at least 8 characters." });
+
+        var username = User.Identity?.Name;
+        if (string.IsNullOrEmpty(username))
+            return Unauthorized(new ProblemDetails { Title = "Not authorized. Please log in again." });
+
+        bool changed = await _auth.ChangePasswordAsync(username, request.CurrentPassword, request.NewPassword, ct);
+        return changed
+            ? NoContent()
+            : Unauthorized(new ProblemDetails { Title = "Current password is incorrect." });
+    }
 }

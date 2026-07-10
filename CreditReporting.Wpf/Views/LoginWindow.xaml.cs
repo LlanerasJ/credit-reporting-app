@@ -9,14 +9,15 @@ public partial class LoginWindow : Window
 {
     private readonly LoginViewModel _viewModel;
 
-    public LoginWindow(ApiService api)
+    public LoginWindow(ApiService api, SettingsService settings, string? notice = null)
     {
         InitializeComponent();
         _viewModel = new LoginViewModel(api, () =>
         {
-            new MainWindow(api).Show();
+            new MainWindow(api, settings).Show();
             Close();
         });
+        if (notice is not null) _viewModel.ErrorMessage = notice;
         DataContext = _viewModel;
         Loaded += (_, _) => UsernameBox.Focus();
     }
