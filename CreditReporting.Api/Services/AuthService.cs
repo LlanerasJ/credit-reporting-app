@@ -11,6 +11,7 @@ namespace CreditReporting.Api.Services;
 public interface IAuthService
 {
     Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default);
+    Task<bool> ChangePasswordAsync(string username, string currentPassword, string newPassword, CancellationToken ct = default);
 }
 
 public class AuthService : IAuthService
@@ -53,5 +54,17 @@ public class AuthService : IAuthService
             expires,
             user.Username,
             user.Role);
+    }
+
+    /// <summary>Returns false when the user does not exist or the current password is wrong.</summary>
+    public async Task<bool> ChangePasswordAsync(string username, string currentPassword, string newPassword, CancellationToken ct = default)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username, ct);
+        if (user is null || !Masking.VerifyPassword(currentPassword, user.PasswordHash))
+            return false;
+
+        user.PasswordHash = Masking.HashPassword(newPassword);
+        await _db.SaveChangesAsync(ct);
+        return true;
     }
 }

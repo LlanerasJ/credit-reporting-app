@@ -10,6 +10,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
         var api = new ApiService();
-        new LoginWindow(api).Show();
+        var settings = new SettingsService();
+        new LoginWindow(api, settings).Show();
     }
 }

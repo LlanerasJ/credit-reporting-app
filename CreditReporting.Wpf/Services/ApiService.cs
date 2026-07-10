@@ -38,6 +38,13 @@ public class ApiService
         };
     }
 
+    public void Logout()
+    {
+        _http.DefaultRequestHeaders.Authorization = null;
+        Username = null;
+        Role = null;
+    }
+
     public async Task LoginAsync(string username, string password)
     {
         var response = await SendAsync(() =>
@@ -47,6 +54,12 @@ public class ApiService
         _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", login.Token);
         Username = login.Username;
         Role = login.Role;
+    }
+
+    public async Task ChangePasswordAsync(string currentPassword, string newPassword)
+    {
+        await SendAsync(() =>
+            _http.PostAsJsonAsync("api/auth/change-password", new ChangePasswordRequest(currentPassword, newPassword)));
     }
 
     public async Task<List<CustomerSummaryDto>> SearchCustomersAsync(string? name, string? ssnLast4)

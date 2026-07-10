@@ -1,0 +1,42 @@
+<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="CreditReporting.Wpf.Views.SettingsView" av:DesignWidth="300.865" Height="618">
+    <StackPanel MaxWidth="480" HorizontalAlignment="Left" Margin="10,0,0,10">
+        <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
+
+        <CheckBox Content="Automatically sign out after a period of inactivity"
+                  IsChecked="{Binding AutoTimeoutEnabled}"
+                  Margin="0,4,0,10" />
+
+        <StackPanel Orientation="Horizontal" IsEnabled="{Binding AutoTimeoutEnabled}">
+            <TextBlock Text="Sign out after" VerticalAlignment="Center" />
+            <ComboBox Width="70" Margin="8,0"
+                      ItemsSource="{Binding TimeoutOptions}"
+                      SelectedItem="{Binding AutoTimeoutMinutes}" />
+            <TextBlock Text="minutes of inactivity" VerticalAlignment="Center" />
+        </StackPanel>
+        <TextBlock Text="Change Password" Style="{StaticResource SectionHeader}" />
+        <StackPanel Height="171">
+            <Label Content="Current Password"/>
+            <PasswordBox x:Name="CurrentPasswordBox" HorizontalAlignment="Left" Width="280"/>
+            <Label Content="New Password"/>
+            <PasswordBox x:Name="NewPasswordBox" HorizontalAlignment="Left" Width="280"/>
+            <Label Content="Confirm Password"/>
+            <PasswordBox x:Name="ConfirmPasswordBox" HorizontalAlignment="Left" Width="280"/>
+        </StackPanel>
+        <Button Content="Change Password" HorizontalAlignment="Left"
+                Click="ChangePassword_Click"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+        <TextBlock Text="{Binding PasswordStatusMessage}" Style="{StaticResource StatusText}" />
+        <TextBlock Text="Metro 2" Style="{StaticResource SectionHeader}" />
+
+        <CheckBox Content="Enable Metro 2 Export"
+                  IsChecked="{Binding Metro2ExportEnabled}"
+                  Margin="0,4,0,10" />
+        <CheckBox Content="Enable Metro 2 Import"
+                  IsChecked="{Binding Metro2ImportEnabled}"
+                  Margin="0,4,0,10" />
+
+        <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource StatusText}" />
+    </StackPanel>
+</UserControl>
