@@ -37,6 +37,12 @@
                   IsChecked="{Binding Metro2ImportEnabled}"
                   Margin="0,4,0,10" />
 
+        <TextBlock Text="Reporting" Style="{StaticResource SectionHeader}" />
+
+        <CheckBox Content="Enable Reporting"
+                  IsChecked="{Binding ReportingEnabled}"
+                  Margin="0,4,0,10" />
+
         <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource StatusText}" />
     </StackPanel>
 </UserControl>
