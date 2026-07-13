@@ -53,13 +53,22 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <StackPanel Margin="0,0,10,0">
+            <!-- DockPanel keeps Run/Export visible on the right while the
+                 parameter inputs wrap in the remaining width. -->
+            <DockPanel Grid.Row="0">
+                <StackPanel DockPanel.Dock="Left" Margin="0,0,10,0" VerticalAlignment="Top">
                     <TextBlock Text="Report" />
                     <ComboBox Width="240"
                               ItemsSource="{Binding Catalog}"
                               SelectedItem="{Binding SelectedDefinition}"
                               DisplayMemberPath="DisplayName" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Content="Run" FontWeight="SemiBold"
+                            Command="{Binding RunCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+                    <Button Content="Export CSV…"
+                            Command="{Binding ExportCsvCommand}" />
                 </StackPanel>
                 <ItemsControl ItemsSource="{Binding ParameterInputs}">
                     <ItemsControl.ItemsPanel>
@@ -82,12 +91,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button Content="Run" VerticalAlignment="Bottom" FontWeight="SemiBold"
-                        Command="{Binding RunCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
-                <Button Content="Export CSV…" VerticalAlignment="Bottom"
-                        Command="{Binding ExportCsvCommand}" />
-            </StackPanel>
+            </DockPanel>
 
             <!-- Save the current configuration -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">

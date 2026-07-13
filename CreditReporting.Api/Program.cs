@@ -28,6 +28,9 @@ builder.Services.AddScoped<ICreditReportService, CreditReportService>();
 
 // Report catalog: register each definition here to make it available to users
 builder.Services.AddScoped<IReportDefinition, DelinquentAccountsReport>();
+builder.Services.AddScoped<IReportDefinition, PortfolioSummaryByTypeReport>();
+builder.Services.AddScoped<IReportDefinition, AuditActivityReport>();
+builder.Services.AddScoped<IReportDefinition, ScoreDistributionReport>();
 builder.Services.AddScoped<IReportCatalog, ReportCatalog>();
 builder.Services.AddScoped<ISavedReportService, SavedReportService>();
 
