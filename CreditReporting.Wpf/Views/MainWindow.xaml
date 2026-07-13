@@ -37,7 +37,7 @@
                     Visibility="{Binding ReportingVisible, Converter={StaticResource BoolToVis}}">
                 <views:ReportingView DataContext="{Binding Reporting}" />
             </TabItem>
-            <TabItem Header="Settings">
+            <TabItem Name="SettingsView" Header="Settings" LostFocus="SettingsView_LostFocus">
                 <views:SettingsView DataContext="{Binding Settings}" Height="661" />
             </TabItem>
         </TabControl>
