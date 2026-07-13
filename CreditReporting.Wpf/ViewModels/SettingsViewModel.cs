@@ -23,6 +23,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _passwordChangeSucceeded;
     [ObservableProperty] private bool _metro2ExportEnabled;
     [ObservableProperty] private bool _metro2ImportEnabled;
+    [ObservableProperty] private bool _reportingEnabled;
 
     public SettingsViewModel(SettingsService settings, ApiService api)
     {
@@ -33,6 +34,7 @@ public partial class SettingsViewModel : ObservableObject
         _autoTimeoutMinutes = settings.Current.AutoTimeoutMinutes;
         _metro2ExportEnabled = settings.Current.Metro2ExportEnabled;
         _metro2ImportEnabled = settings.Current.Metro2ImportEnabled;
+        _reportingEnabled = settings.Current.ReportingEnabled;
     }
 
     // Settings are applied and persisted the moment they change.
@@ -45,6 +47,8 @@ public partial class SettingsViewModel : ObservableObject
         SaveSettings(value ? "Saved. Metro 2 export enabled." : "Saved. Metro 2 export disabled.");
     partial void OnMetro2ImportEnabledChanged(bool value) =>
         SaveSettings(value ? "Saved. Metro 2 import enabled." : "Saved. Metro 2 import disabled.");
+    partial void OnReportingEnabledChanged(bool value) =>
+        SaveSettings(value ? "Saved. Reporting enabled." : "Saved. Reporting disabled.");
 
     private void SaveSettings(string successMessage)
     {
@@ -55,7 +59,8 @@ public partial class SettingsViewModel : ObservableObject
                 AutoTimeoutEnabled = AutoTimeoutEnabled,
                 AutoTimeoutMinutes = AutoTimeoutMinutes,
                 Metro2ExportEnabled = Metro2ExportEnabled,
-                Metro2ImportEnabled = Metro2ImportEnabled
+                Metro2ImportEnabled = Metro2ImportEnabled,
+                ReportingEnabled = ReportingEnabled
             });
             StatusMessage = successMessage;
         }

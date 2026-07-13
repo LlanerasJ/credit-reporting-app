@@ -21,7 +21,7 @@ Don't use this against real data.
 
 | Project | Purpose |
 |---|---|
-| `CreditReporting.Api` | Web API: auth, customers, accounts, credit reports, Metro 2 |
+| `CreditReporting.Api` | Web API: auth, customers, accounts, credit reports, reporting, Metro 2 |
 | `CreditReporting.Wpf` | WPF desktop client (MVVM via CommunityToolkit.Mvvm) |
 | `CreditReporting.Shared` | DTOs shared between the API and client |
 | `CreditReporting.Tests` | xUnit tests for the Metro 2 writer/parser/validator and masking |
@@ -58,6 +58,18 @@ the user, timestamp, customer, and stated purpose.
 **Auth.** `POST /api/auth/login` returns an 8-hour JWT; the rest of the endpoints
 require it. Passwords are stored as PBKDF2 hashes.
 
+**Reporting** (`CreditReporting.Api/Reports/`). A curated catalog of business
+reports (delinquent accounts, portfolio summary, audit activity, score
+distribution). Each report type is one `IReportDefinition` class that declares
+its parameters and runs a reviewed, masked EF query — the client renders the
+parameter inputs generically from `GET /api/reports/catalog`, so adding a
+report is one server-side class plus a DI registration. `POST /api/reports/run`
+validates parameters and writes a `ReportRun` row to the audit log. Users can
+save report configurations (`/api/reports/saved`): everyone saves private
+reports, only admins can share one with all users, and only the owner or an
+admin can edit or delete. The WPF Reporting tab pairs a searchable library of
+saved reports with a runner that outputs to a grid or CSV.
+
 **Metro 2 module** (`CreditReporting.Api/Metro2/`):
 
 - `Metro2FieldAttribute` marks each property with its 1-based start position,
@@ -77,7 +89,7 @@ require it. Passwords are stored as PBKDF2 hashes.
   reproduce the CDIA's licensed field tables.
 
 **WPF client.** A login window opens the main window, which has tabs for search,
-credit report, Metro 2 export, and Metro 2 import. The logic sits in the
+credit report, Metro 2 export, Metro 2 import, and reporting. The logic sits in the
 ViewModels; code-behind only handles view wiring (focus, the password box, and
 double-click). `Services/ApiService.cs` wraps the HTTP calls and turns failures
 into readable messages.

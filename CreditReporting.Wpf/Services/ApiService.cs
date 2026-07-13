@@ -86,6 +86,41 @@ public class ApiService
         return await ReadAsync<CreditReportDto>(response);
     }
 
+    public async Task<List<ReportDefinitionDto>> GetReportCatalogAsync()
+    {
+        var response = await SendAsync(() => _http.GetAsync("api/reports/catalog"));
+        return await ReadAsync<List<ReportDefinitionDto>>(response);
+    }
+
+    public async Task<ReportResultDto> RunReportAsync(RunReportRequest request)
+    {
+        var response = await SendAsync(() => _http.PostAsJsonAsync("api/reports/run", request));
+        return await ReadAsync<ReportResultDto>(response);
+    }
+
+    public async Task<List<SavedReportDto>> GetSavedReportsAsync()
+    {
+        var response = await SendAsync(() => _http.GetAsync("api/reports/saved"));
+        return await ReadAsync<List<SavedReportDto>>(response);
+    }
+
+    public async Task<SavedReportDto> CreateSavedReportAsync(SaveReportRequest request)
+    {
+        var response = await SendAsync(() => _http.PostAsJsonAsync("api/reports/saved", request));
+        return await ReadAsync<SavedReportDto>(response);
+    }
+
+    public async Task<SavedReportDto> UpdateSavedReportAsync(int id, SaveReportRequest request)
+    {
+        var response = await SendAsync(() => _http.PutAsJsonAsync($"api/reports/saved/{id}", request));
+        return await ReadAsync<SavedReportDto>(response);
+    }
+
+    public async Task DeleteSavedReportAsync(int id)
+    {
+        await SendAsync(() => _http.DeleteAsync($"api/reports/saved/{id}"));
+    }
+
     public async Task<Metro2PreviewDto> Metro2PreviewAsync(Metro2GenerateRequest request)
     {
         var response = await SendAsync(() => _http.PostAsJsonAsync("api/metro2/preview", request));

@@ -1,0 +1,124 @@
+<UserControl x:Class="CreditReporting.Wpf.Views.ReportingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Library: my saved reports + shared ones -->
+        <DockPanel Grid.Column="0" Margin="0,0,12,0">
+            <TextBlock DockPanel.Dock="Top" Text="Saved Reports" Style="{StaticResource SectionHeader}" Margin="0,0,0,4" />
+            <TextBox DockPanel.Dock="Top" Margin="0,0,0,6"
+                     Text="{Binding LibraryFilter, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Filter by name or description" />
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" MinWidth="70" />
+                <Button Content="Delete" Command="{Binding DeleteSelectedCommand}" MinWidth="70" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding SavedReports}"
+                     SelectedItem="{Binding SelectedSavedReport}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="2,4">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Right" Background="#1F3864" CornerRadius="3"
+                                        Padding="5,1" Margin="6,0,0,0" VerticalAlignment="Center"
+                                        Visibility="{Binding IsShared, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="Shared" Foreground="White" FontSize="10" />
+                                </Border>
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                            </DockPanel>
+                            <TextBlock Text="{Binding Description}" Foreground="#666" FontSize="11"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Foreground="#999" FontSize="10">
+                                <Run Text="by " /><Run Text="{Binding OwnerUsername, Mode=OneWay}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- Runner -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- DockPanel keeps Run/Export visible on the right while the
+                 parameter inputs wrap in the remaining width. -->
+            <DockPanel Grid.Row="0">
+                <StackPanel DockPanel.Dock="Left" Margin="0,0,10,0" VerticalAlignment="Top">
+                    <TextBlock Text="Report" />
+                    <ComboBox Width="240"
+                              ItemsSource="{Binding Catalog}"
+                              SelectedItem="{Binding SelectedDefinition}"
+                              DisplayMemberPath="DisplayName" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Content="Run" FontWeight="SemiBold"
+                            Command="{Binding RunCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+                    <Button Content="Export CSV…"
+                            Command="{Binding ExportCsvCommand}" />
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding ParameterInputs}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,10,4">
+                                <TextBlock Text="{Binding Label}" />
+                                <TextBox Width="170"
+                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsChoice, Converter={StaticResource InverseBoolToVis}}" />
+                                <ComboBox Width="170"
+                                          ItemsSource="{Binding Options}"
+                                          SelectedItem="{Binding Value}"
+                                          Visibility="{Binding IsChoice, Converter={StaticResource BoolToVis}}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+
+            <!-- Save the current configuration -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                <StackPanel Margin="0,0,10,0">
+                    <TextBlock Text="Save as" />
+                    <TextBox Width="200" Text="{Binding SaveName, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <StackPanel Margin="0,0,10,0">
+                    <TextBlock Text="Description" />
+                    <TextBox Width="260" Text="{Binding SaveDescription, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+                <CheckBox Content="Shared with everyone" VerticalAlignment="Bottom" Margin="0,0,6,6"
+                          IsChecked="{Binding SaveShared}"
+                          Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}" />
+                <Button Content="Save New" VerticalAlignment="Bottom"
+                        Command="{Binding SaveAsNewCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
+                <Button Content="Update Selected" VerticalAlignment="Bottom"
+                        Command="{Binding UpdateSelectedCommand}" />
+            </StackPanel>
+
+            <TextBlock Grid.Row="2" Text="{Binding StatusMessage}" Style="{StaticResource StatusText}" />
+
+            <TextBlock Grid.Row="3" Text="Results" Style="{StaticResource SectionHeader}" Margin="0,0,0,14" />
+            <DataGrid Grid.Row="3"
+                      ItemsSource="{Binding Results}"
+                      AutoGenerateColumns="True" Margin="0,23,0,0" Grid.RowSpan="2" />
+        </Grid>
+    </Grid>
+</UserControl>

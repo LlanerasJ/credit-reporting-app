@@ -48,6 +48,31 @@ public static class DbSeeder
             new ApiUser { Username = "analyst", PasswordHash = Masking.HashPassword("Demo123!"), Role = "Analyst", DisplayName = "Demo Analyst" },
             new ApiUser { Username = "admin", PasswordHash = Masking.HashPassword("Admin123!"), Role = "Admin", DisplayName = "Demo Admin" });
 
+        // Example saved reports so the Reporting tab isn't empty on first run
+        db.SavedReports.AddRange(
+            new SavedReport
+            {
+                Name = "High-risk past due (all states)",
+                Description = "Delinquent accounts at least $500 past due, company-wide.",
+                ReportType = "delinquent-accounts",
+                ParametersJson = """{"minPastDue":"500"}""",
+                OwnerUsername = "admin",
+                IsShared = true,
+                CreatedUtc = today,
+                ModifiedUtc = today
+            },
+            new SavedReport
+            {
+                Name = "Texas delinquencies",
+                Description = "Delinquent accounts for customers in TX.",
+                ReportType = "delinquent-accounts",
+                ParametersJson = """{"state":"TX"}""",
+                OwnerUsername = "analyst",
+                IsShared = false,
+                CreatedUtc = today,
+                ModifiedUtc = today
+            });
+
         for (int i = 0; i < 15; i++)
         {
             var city = Cities[rng.Next(Cities.Length)];
