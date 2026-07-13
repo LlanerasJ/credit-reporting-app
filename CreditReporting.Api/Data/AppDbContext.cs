@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<CreditScore> CreditScores => Set<CreditScore>();
     public DbSet<AuditLogEntry> AuditLog => Set<AuditLogEntry>();
     public DbSet<ApiUser> Users => Set<ApiUser>();
+    public DbSet<SavedReport> SavedReports => Set<SavedReport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -77,6 +78,15 @@ public class AppDbContext : DbContext
         {
             e.HasIndex(a => a.CustomerId);
             e.HasIndex(a => a.TimestampUtc);
+        });
+
+        modelBuilder.Entity<SavedReport>(e =>
+        {
+            e.Property(r => r.Name).HasMaxLength(100);
+            e.Property(r => r.Description).HasMaxLength(500);
+            e.Property(r => r.ReportType).HasMaxLength(50);
+            e.Property(r => r.OwnerUsername).HasMaxLength(50);
+            e.HasIndex(r => r.OwnerUsername);
         });
     }
 }
