@@ -29,6 +29,7 @@ builder.Services.AddScoped<ICreditReportService, CreditReportService>();
 // Report catalog: register each definition here to make it available to users
 builder.Services.AddScoped<IReportDefinition, DelinquentAccountsReport>();
 builder.Services.AddScoped<IReportCatalog, ReportCatalog>();
+builder.Services.AddScoped<ISavedReportService, SavedReportService>();
 
 // Metro 2 module
 builder.Services.AddSingleton<IMetro2Writer, Metro2Writer>();

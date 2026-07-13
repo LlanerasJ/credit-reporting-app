@@ -36,6 +36,30 @@ public class RunReportRequest
     public Dictionary<string, string?> Parameters { get; set; } = new();
 }
 
+/// <summary>A saved configuration of a catalog report.</summary>
+public class SavedReportDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string ReportType { get; set; } = "";
+    public Dictionary<string, string?> Parameters { get; set; } = new();
+    public string OwnerUsername { get; set; } = "";
+    public bool IsShared { get; set; }
+    public DateTime CreatedUtc { get; set; }
+    public DateTime ModifiedUtc { get; set; }
+}
+
+/// <summary>Create or update a saved report. IsShared requires the Admin role.</summary>
+public class SaveReportRequest
+{
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string ReportType { get; set; } = "";
+    public Dictionary<string, string?> Parameters { get; set; } = new();
+    public bool IsShared { get; set; }
+}
+
 public class ReportColumnDto
 {
     public string Name { get; set; } = "";
