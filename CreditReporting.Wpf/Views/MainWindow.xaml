@@ -4,20 +4,21 @@
         xmlns:views="clr-namespace:CreditReporting.Wpf.Views"
         Title="Credit Reporting System (Demo)"
         Height="760" Width="1180"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <DockPanel>
         <Border DockPanel.Dock="Top" Background="#1F3864" Padding="14,10">
-            <DockPanel>
-                <TextBlock Text="Credit Reporting System"
-                           Foreground="White" FontSize="16" FontWeight="Bold" />
-                <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right"
+            <DockPanel LastChildFill="False" Margin="0,0,-4,0">
+                <TextBlock Text="Credit Reporting System" DockPanel.Dock="Left"
+                           Foreground="White" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+                <Button Name="SettingsButton" DockPanel.Dock="Right" MinWidth="0" Width="25" FontFamily="Segoe Fluent Icons" FontSize="12" Content="&#xE713;" ToolTip="Settings" Foreground="White" Background="Transparent" BorderBrush="Transparent" Padding="0" Click="SettingsButton_Click"/>
+                <TextBlock DockPanel.Dock="Right" Margin="0,0,10,0"
                            Foreground="#CFE0FF" VerticalAlignment="Center">
                     <Run Text="Signed in as " /><Run Text="{Binding CurrentUser, Mode=OneWay}" FontWeight="SemiBold" />
                 </TextBlock>
             </DockPanel>
         </Border>
 
-        <TabControl SelectedIndex="{Binding SelectedTabIndex}" Margin="8">
+        <TabControl Name="MainTabControl" SelectedIndex="{Binding SelectedTabIndex}" Margin="8">
             <TabItem Header="Customer Search">
                 <views:CustomerSearchView DataContext="{Binding Search}" />
             </TabItem>

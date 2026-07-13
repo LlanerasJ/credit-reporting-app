@@ -1,7 +1,8 @@
-using System.Windows;
-using System.Windows.Threading;
 using CreditReporting.Wpf.Services;
 using CreditReporting.Wpf.ViewModels;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace CreditReporting.Wpf.Views;
 
@@ -57,5 +58,22 @@ public partial class MainWindow : Window
         new LoginWindow(_api, _settings,
             $"You were signed out after {_settings.Current.AutoTimeoutMinutes} minute(s) of inactivity.").Show();
         Close();
+    }
+
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        SettingsView.Visibility = Visibility.Visible;
+        SettingsView.Focus();
+    }
+
+    // Handle hiding the SettingsView when switching away from the Settings tab
+    private void SettingsView_LostFocus(object sender, RoutedEventArgs e)
+    {
+        SettingsView.Visibility = Visibility.Collapsed;
+    }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+        SettingsView.Visibility = Visibility.Collapsed;
     }
 }
