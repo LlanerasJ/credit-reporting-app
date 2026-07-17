@@ -8,6 +8,8 @@ public class AppSettings
 {
     public bool AutoTimeoutEnabled { get; set; } = true;
     public int AutoTimeoutMinutes { get; set; } = 15;
+    public bool RememberUsernameEnabled { get; set; } = false;
+    public string? RememberedUsername { get; set; }
     public bool Metro2ExportEnabled { get; set; } = true;
     public bool Metro2ImportEnabled { get; set; } = true;
     public bool ReportingEnabled { get; set; } = true;
@@ -32,6 +34,14 @@ public class SettingsService
             JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         Current = settings;
         SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Stores the username to prefill next sign-in, or clears it when the setting is off.</summary>
+    public void RememberUsername(string username)
+    {
+        AppSettings settings = Current;
+        settings.RememberedUsername = settings.RememberUsernameEnabled ? username : null;
+        Save(settings);
     }
 
     private static AppSettings Load()

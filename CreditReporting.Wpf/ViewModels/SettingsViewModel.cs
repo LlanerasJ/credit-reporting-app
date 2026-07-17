@@ -17,6 +17,7 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty] private bool _autoTimeoutEnabled;
     [ObservableProperty] private int _autoTimeoutMinutes;
+    [ObservableProperty] private bool _rememberUsernameEnabled;
     [ObservableProperty] private string _statusMessage = "";
     [ObservableProperty] private string _passwordStatusMessage = "";
     [ObservableProperty] private bool _isBusy;
@@ -32,6 +33,7 @@ public partial class SettingsViewModel : ObservableObject
         // Assign the backing fields so loading the saved values does not immediately re-save.
         _autoTimeoutEnabled = settings.Current.AutoTimeoutEnabled;
         _autoTimeoutMinutes = settings.Current.AutoTimeoutMinutes;
+        _rememberUsernameEnabled = settings.Current.RememberUsernameEnabled;
         _metro2ExportEnabled = settings.Current.Metro2ExportEnabled;
         _metro2ImportEnabled = settings.Current.Metro2ImportEnabled;
         _reportingEnabled = settings.Current.ReportingEnabled;
@@ -49,6 +51,8 @@ public partial class SettingsViewModel : ObservableObject
         SaveSettings(value ? "Saved. Metro 2 import enabled." : "Saved. Metro 2 import disabled.");
     partial void OnReportingEnabledChanged(bool value) =>
         SaveSettings(value ? "Saved. Reporting enabled." : "Saved. Reporting disabled.");
+    partial void OnRememberUsernameEnabledChanged(bool value) =>
+        SaveSettings(value ? "Saved. Username will be remembered." : "Saved. Username will not be remembered.");
 
     private void SaveSettings(string successMessage)
     {
@@ -58,6 +62,9 @@ public partial class SettingsViewModel : ObservableObject
             {
                 AutoTimeoutEnabled = AutoTimeoutEnabled,
                 AutoTimeoutMinutes = AutoTimeoutMinutes,
+                RememberUsernameEnabled = RememberUsernameEnabled,
+                // Turning the setting off forgets the stored username; other saves keep it.
+                RememberedUsername = RememberUsernameEnabled ? _settings.Current.RememberedUsername : null,
                 Metro2ExportEnabled = Metro2ExportEnabled,
                 Metro2ImportEnabled = Metro2ImportEnabled,
                 ReportingEnabled = ReportingEnabled

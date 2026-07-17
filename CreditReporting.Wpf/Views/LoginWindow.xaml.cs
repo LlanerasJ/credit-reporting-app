@@ -12,14 +12,19 @@ public partial class LoginWindow : Window
     public LoginWindow(ApiService api, SettingsService settings, string? notice = null)
     {
         InitializeComponent();
-        _viewModel = new LoginViewModel(api, () =>
+        _viewModel = new LoginViewModel(api, settings, () =>
         {
             new MainWindow(api, settings).Show();
             Close();
         });
         if (notice is not null) _viewModel.ErrorMessage = notice;
         DataContext = _viewModel;
-        Loaded += (_, _) => UsernameBox.Focus();
+        // With the username already filled in, the password is the only field left to type.
+        Loaded += (_, _) =>
+        {
+            if (_viewModel.HasRememberedUsername) PasswordBox.Focus();
+            else UsernameBox.Focus();
+        };
     }
 
     // PasswordBox.Password is not bindable, so the view hands it to the command here.
