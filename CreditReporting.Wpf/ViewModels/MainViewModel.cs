@@ -45,7 +45,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     // The settings service outlives this viewmodel, so drop the subscription on close.
-    public void Dispose() => _settings.SettingsChanged -= OnSettingsChanged;
+    public void Dispose()
+    {
+        _settings.SettingsChanged -= OnSettingsChanged;
+        Settings.Dispose();
+    }
 
     private async Task OpenReportAsync(int customerId)
     {

@@ -27,6 +27,7 @@ public class ApiService
 
     public string? Username { get; private set; }
     public string? Role { get; private set; }
+    public DateTime? TokenExpiresAtUtc { get; private set; }
     public bool IsAuthenticated => _http.DefaultRequestHeaders.Authorization is not null;
 
     public ApiService(string baseUrl = "http://localhost:5006")
@@ -43,6 +44,7 @@ public class ApiService
         _http.DefaultRequestHeaders.Authorization = null;
         Username = null;
         Role = null;
+        TokenExpiresAtUtc = null;
     }
 
     public async Task LoginAsync(string username, string password)
@@ -54,6 +56,7 @@ public class ApiService
         _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", login.Token);
         Username = login.Username;
         Role = login.Role;
+        TokenExpiresAtUtc = login.ExpiresAtUtc;
     }
 
     public async Task ChangePasswordAsync(string currentPassword, string newPassword)
