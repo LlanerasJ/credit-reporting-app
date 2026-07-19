@@ -1,4 +1,5 @@
 using System.IO;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CreditReporting.Wpf.Services;
@@ -8,10 +9,12 @@ namespace CreditReporting.Wpf.ViewModels;
 /// <summary>Values handed over by the view, since PasswordBox.Password is not bindable.</summary>
 public record PasswordChangeValues(string Current, string New, string Confirm);
 
-public partial class SettingsViewModel : ObservableObject
+public partial class SettingsViewModel : ObservableObject, IDisposable
 {
     private readonly SettingsService _settings;
     private readonly ApiService _api;
+    // Drives the live "time remaining" countdown for the current session token.
+    private readonly DispatcherTimer _expiryTimer = new() { Interval = TimeSpan.FromSeconds(1) };
 
     public IReadOnlyList<int> TimeoutOptions { get; } = [1, 5, 10, 15, 30, 60];
 
@@ -25,6 +28,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _metro2ExportEnabled;
     [ObservableProperty] private bool _metro2ImportEnabled;
     [ObservableProperty] private bool _reportingEnabled;
+    [ObservableProperty] private string _tokenExpiryMessage = "";
 
     public SettingsViewModel(SettingsService settings, ApiService api)
     {
@@ -37,7 +41,34 @@ public partial class SettingsViewModel : ObservableObject
         _metro2ExportEnabled = settings.Current.Metro2ExportEnabled;
         _metro2ImportEnabled = settings.Current.Metro2ImportEnabled;
         _reportingEnabled = settings.Current.ReportingEnabled;
+
+        _expiryTimer.Tick += (_, _) => UpdateTokenExpiry();
+        UpdateTokenExpiry();
+        _expiryTimer.Start();
     }
+
+    /// <summary>Refreshes the live countdown to the session token's expiry.</summary>
+    private void UpdateTokenExpiry()
+    {
+        if (_api.TokenExpiresAtUtc is not { } expiresUtc)
+        {
+            TokenExpiryMessage = "Not signed in";
+            return;
+        }
+
+        TimeSpan remaining = expiresUtc - DateTime.UtcNow;
+        TokenExpiryMessage = remaining <= TimeSpan.Zero
+            ? "Expired — sign in again"
+            : $"{FormatRemaining(remaining)} (expires {expiresUtc.ToLocalTime():t})";
+    }
+
+    private static string FormatRemaining(TimeSpan remaining) =>
+        remaining.TotalHours >= 1
+            ? $"{(int)remaining.TotalHours}h {remaining.Minutes}m"
+            : $"{remaining.Minutes}m {remaining.Seconds}s";
+
+    // Stops the countdown timer when the session window closes.
+    public void Dispose() => _expiryTimer.Stop();
 
     // Settings are applied and persisted the moment they change.
     partial void OnAutoTimeoutEnabledChanged(bool value) => SaveSettings(value

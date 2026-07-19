@@ -20,6 +20,11 @@
           IsChecked="{Binding RememberUsernameEnabled}"
           Margin="0,10,0,10" />
 
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Token expiry / time remaining: " VerticalAlignment="Center" />
+            <TextBlock Text="{Binding TokenExpiryMessage}" Margin="8,0" VerticalAlignment="Center" />
+        </StackPanel>
+
         <TextBlock Text="Change Password" Style="{StaticResource SectionHeader}" />
         <StackPanel Height="171">
             <Label Content="Current Password"/>
