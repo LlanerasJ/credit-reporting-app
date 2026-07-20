@@ -13,6 +13,7 @@ public class AppSettings
     public bool Metro2ExportEnabled { get; set; } = true;
     public bool Metro2ImportEnabled { get; set; } = true;
     public bool ReportingEnabled { get; set; } = true;
+    public string? Metro2DefaultFolderLocation { get; set; }
 }
 
 /// <summary>Loads and saves <see cref="AppSettings"/> as JSON under %APPDATA%.</summary>

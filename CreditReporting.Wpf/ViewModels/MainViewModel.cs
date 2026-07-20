@@ -27,7 +27,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Report = new CreditReportViewModel(api);
         Search = new CustomerSearchViewModel(api, OpenReportAsync);
         Reporting = new ReportingViewModel(api);
-        Export = new Metro2ExportViewModel(api);
+        Export = new Metro2ExportViewModel(settings, api);
         Import = new Metro2ImportViewModel(api);
         Settings = new SettingsViewModel(settings, api);
 
