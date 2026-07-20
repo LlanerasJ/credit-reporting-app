@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CreditReporting.Wpf.ViewModels;
+using Microsoft.Win32;
 
 namespace CreditReporting.Wpf.Views;
 
@@ -24,5 +25,19 @@ public partial class SettingsView : UserControl
             NewPasswordBox.Clear();
             ConfirmPasswordBox.Clear();
         }
+    }
+
+    private void BrowseFolder_Click(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not SettingsViewModel vm) return;
+
+        OpenFolderDialog dialog = new OpenFolderDialog();
+
+        dialog.Title = "Select Metro 2 Default Folder Location";
+        dialog.InitialDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+        dialog.Multiselect = false;
+
+        if (dialog.ShowDialog() == true)
+            vm.Metro2DefaultFolderLocation = dialog.FolderName;
     }
 }

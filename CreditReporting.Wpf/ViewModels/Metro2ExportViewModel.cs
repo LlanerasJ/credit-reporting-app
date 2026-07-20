@@ -10,6 +10,7 @@ namespace CreditReporting.Wpf.ViewModels;
 
 public partial class Metro2ExportViewModel : ObservableObject
 {
+    private readonly SettingsService _settings;
     private readonly ApiService _api;
 
     [ObservableProperty] private DateTime _fromDate = DateTime.Today.AddMonths(-1);
@@ -23,7 +24,11 @@ public partial class Metro2ExportViewModel : ObservableObject
 
     public ObservableCollection<Metro2ValidationIssueDto> Issues { get; } = new();
 
-    public Metro2ExportViewModel(ApiService api) => _api = api;
+    public Metro2ExportViewModel(SettingsService settings, ApiService api)
+    {
+        _settings = settings;
+        _api = api;
+    }
 
     private Metro2GenerateRequest BuildRequest() => new()
     {
@@ -83,7 +88,9 @@ public partial class Metro2ExportViewModel : ObservableObject
             var dialog = new SaveFileDialog
             {
                 FileName = fileName,
-                Filter = "Metro 2 file (*.dat)|*.dat|All files (*.*)|*.*"
+                Filter = "Metro 2 file (*.dat)|*.dat|All files (*.*)|*.*",
+                // Opens in the configured default folder; empty falls back to the last-used folder.
+                InitialDirectory = _settings.Current.Metro2DefaultFolderLocation ?? ""
             };
             if (dialog.ShowDialog() == true)
             {

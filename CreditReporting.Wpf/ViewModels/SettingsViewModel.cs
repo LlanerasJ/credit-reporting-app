@@ -29,6 +29,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _metro2ImportEnabled;
     [ObservableProperty] private bool _reportingEnabled;
     [ObservableProperty] private string _tokenExpiryMessage = "";
+    [ObservableProperty] private string _metro2DefaultFolderLocation = "";
 
     public SettingsViewModel(SettingsService settings, ApiService api)
     {
@@ -41,6 +42,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         _metro2ExportEnabled = settings.Current.Metro2ExportEnabled;
         _metro2ImportEnabled = settings.Current.Metro2ImportEnabled;
         _reportingEnabled = settings.Current.ReportingEnabled;
+        _metro2DefaultFolderLocation = settings.Current.Metro2DefaultFolderLocation ?? "";
 
         _expiryTimer.Tick += (_, _) => UpdateTokenExpiry();
         UpdateTokenExpiry();
@@ -84,6 +86,8 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         SaveSettings(value ? "Saved. Reporting enabled." : "Saved. Reporting disabled.");
     partial void OnRememberUsernameEnabledChanged(bool value) =>
         SaveSettings(value ? "Saved. Username will be remembered." : "Saved. Username will not be remembered.");
+    partial void OnMetro2DefaultFolderLocationChanged(string value) =>
+        SaveSettings($"Saved. Metro 2 files will default to {value}.");
 
     private void SaveSettings(string successMessage)
     {
@@ -98,7 +102,8 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
                 RememberedUsername = RememberUsernameEnabled ? _settings.Current.RememberedUsername : null,
                 Metro2ExportEnabled = Metro2ExportEnabled,
                 Metro2ImportEnabled = Metro2ImportEnabled,
-                ReportingEnabled = ReportingEnabled
+                ReportingEnabled = ReportingEnabled,
+                Metro2DefaultFolderLocation = Metro2DefaultFolderLocation
             });
             StatusMessage = successMessage;
         }
