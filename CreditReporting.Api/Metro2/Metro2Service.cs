@@ -19,7 +19,7 @@ public interface IMetro2Service
 /// </summary>
 public class Metro2Service : IMetro2Service
 {
-    private const string FurnisherId = "DEMOFURN0001";
+    private string FurnisherId = "DEMOFURN0001";
     private const string ReporterName = "Demo Data Furnisher Inc";
 
     private readonly IAccountRepository _accounts;
@@ -42,6 +42,11 @@ public class Metro2Service : IMetro2Service
         DateTime from = request.FromDate ?? to.AddMonths(-1);
 
         var accounts = await _accounts.GetForReportingWindowAsync(from, to, request.AccountIds, ct);
+
+        if (!string.IsNullOrEmpty(request.FurnisherIdentificationNumber))
+        {
+            FurnisherId = request.FurnisherIdentificationNumber;
+        }
 
         var file = new Metro2File
         {
@@ -131,7 +136,7 @@ public class Metro2Service : IMetro2Service
     }
 
     /// <summary>Maps one Account (+customer +history) to a Metro 2 base record with appended segments.</summary>
-    private static Metro2BaseRecord MapAccount(Account account, DateTime activityDate)
+    private Metro2BaseRecord MapAccount(Account account, DateTime activityDate)
     {
         var customer = account.Customer;
         var history = account.PaymentHistory.OrderByDescending(p => p.PaymentDate).ToList();

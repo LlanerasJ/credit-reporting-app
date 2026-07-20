@@ -42,6 +42,12 @@
         <TextBlock Text="Metro 2" Style="{StaticResource SectionHeader}" />
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Furnisher Identifier" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding FurnisherIdentificationNumber, Mode=TwoWay}" Width="344"
+                     VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Label Content="Default save folder" VerticalAlignment="Center"/>
             <TextBox x:Name="FilePathTextBox" Text="{Binding Metro2DefaultFolderLocation, Mode=TwoWay}" Width="240" IsReadOnly="True"
                      VerticalContentAlignment="Center" Margin="8,0"/>
