@@ -7,6 +7,8 @@ public class Metro2GenerateRequest
     public DateTime? ToDate { get; set; }
     /// <summary>Optional explicit account population; null = all accounts in range.</summary>
     public List<int>? AccountIds { get; set; }
+    /// <summary>Overrides the furnisher ID stamped on the header and base records; null or empty = the built-in default.</summary>
+    public string? FurnisherIdentificationNumber { get; set; }
 }
 
 /// <summary>Returned by the preview endpoint before the file is actually generated.</summary>

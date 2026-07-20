@@ -33,7 +33,10 @@ public partial class Metro2ExportViewModel : ObservableObject
     private Metro2GenerateRequest BuildRequest() => new()
     {
         FromDate = FromDate.Date,
-        ToDate = ToDate.Date
+        ToDate = ToDate.Date,
+        // Read on every request so preview and generate agree, and so an edit in
+        // Settings takes effect without reopening this screen.
+        FurnisherIdentificationNumber = _settings.Current.FurnisherIdentificationNumber
     };
 
     [RelayCommand]
