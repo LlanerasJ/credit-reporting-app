@@ -124,6 +124,13 @@ public class ApiService
         await SendAsync(() => _http.DeleteAsync($"api/reports/saved/{id}"));
     }
 
+    public async Task<List<Metro2AccountSummaryDto>> Metro2AccountsAsync(DateTime from, DateTime to)
+    {
+        var response = await SendAsync(() =>
+            _http.GetAsync($"api/metro2/accounts?from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}"));
+        return await ReadAsync<List<Metro2AccountSummaryDto>>(response);
+    }
+
     public async Task<Metro2PreviewDto> Metro2PreviewAsync(Metro2GenerateRequest request)
     {
         var response = await SendAsync(() => _http.PostAsJsonAsync("api/metro2/preview", request));

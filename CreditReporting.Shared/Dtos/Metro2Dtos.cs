@@ -11,6 +11,16 @@ public class Metro2GenerateRequest
     public string? FurnisherIdentificationNumber { get; set; }
 }
 
+/// <summary>One account offered in the export account picker: accounts with activity in the window.</summary>
+public class Metro2AccountSummaryDto
+{
+    public int Id { get; set; }
+    public string AccountNumberMasked { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string AccountType { get; set; } = "";
+    public decimal CurrentBalance { get; set; }
+}
+
 /// <summary>Returned by the preview endpoint before the file is actually generated.</summary>
 public class Metro2PreviewDto
 {

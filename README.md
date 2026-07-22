@@ -81,9 +81,10 @@ saved reports with a runner that outputs to a grid or CSV.
   throwing on them.
 - `Metro2Validator` checks required fields, code ranges, and dates, separating
   errors from warnings.
-- Endpoints: `POST /api/metro2/preview` (dry run), `POST /api/metro2/generate`
-  (returns the file, and refuses if there are validation errors), and
-  `POST /api/metro2/parse` (upload and parse).
+- Endpoints: `GET /api/metro2/accounts` (accounts with activity in a window, for
+  the export account picker), `POST /api/metro2/preview` (dry run),
+  `POST /api/metro2/generate` (returns the file, and refuses if there are
+  validation errors), and `POST /api/metro2/parse` (upload and parse).
 - The field layout is a synthetic approximation of the public Metro 2 structure,
   documented in [docs/METRO2-FORMAT.md](docs/METRO2-FORMAT.md). It does not
   reproduce the CDIA's licensed field tables.

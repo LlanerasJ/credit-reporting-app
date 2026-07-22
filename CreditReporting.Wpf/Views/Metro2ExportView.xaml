@@ -6,6 +6,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -18,6 +19,9 @@
                 <TextBlock Text="To" />
                 <DatePicker SelectedDate="{Binding ToDate}" Width="140" />
             </StackPanel>
+            <Button Content="Choose Accounts…" VerticalAlignment="Bottom"
+                    Command="{Binding LoadAccountsCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
             <Button Content="Preview" VerticalAlignment="Bottom"
                     Command="{Binding PreviewCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}" />
@@ -28,7 +32,48 @@
 
         <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" Style="{StaticResource StatusText}" />
 
-        <UniformGrid Grid.Row="2" Rows="1" Margin="0,10,0,0" HorizontalAlignment="Left" Width="420"
+        <Border Grid.Row="2" Margin="0,10,0,0" Padding="8"
+                BorderBrush="#DDD" BorderThickness="1"
+                Visibility="{Binding AccountsLoaded, Converter={StaticResource BoolToVis}}">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top">
+                    <TextBlock Text="Accounts to include" Style="{StaticResource SectionHeader}"
+                               VerticalAlignment="Center" Margin="0,0,0,4" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Select All" MinWidth="0"
+                                Command="{Binding SelectAllAccountsCommand}" />
+                        <Button Content="Clear" MinWidth="0"
+                                Command="{Binding ClearAccountSelectionCommand}" />
+                    </StackPanel>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding Accounts}" MaxHeight="180" BorderThickness="0"
+                         HorizontalContentAlignment="Stretch"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Focusable" Value="False" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected}" Margin="0,2">
+                                <TextBlock>
+                                    <Run Text="{Binding AccountNumberMasked, Mode=OneWay}" FontWeight="SemiBold" />
+                                    <Run Text="  —  " Foreground="#999" />
+                                    <Run Text="{Binding CustomerName, Mode=OneWay}" />
+                                    <Run Text="  •  " Foreground="#999" />
+                                    <Run Text="{Binding AccountType, Mode=OneWay}" Foreground="#666" />
+                                    <Run Text="  •  " Foreground="#999" />
+                                    <Run Text="{Binding CurrentBalance, Mode=OneWay, StringFormat=C}" Foreground="#666" />
+                                </TextBlock>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <UniformGrid Grid.Row="3" Rows="1" Margin="0,10,0,0" HorizontalAlignment="Left" Width="420"
                      Visibility="{Binding HasPreview, Converter={StaticResource BoolToVis}}">
             <StackPanel>
                 <TextBlock Text="{Binding RecordCount}" Style="{StaticResource MetricValue}" />
@@ -44,7 +89,7 @@
             </StackPanel>
         </UniformGrid>
 
-        <DockPanel Grid.Row="3" Margin="0,10,0,0">
+        <DockPanel Grid.Row="4" Margin="0,10,0,0">
             <TextBlock DockPanel.Dock="Top" Text="Validation Issues" Style="{StaticResource SectionHeader}" />
             <DataGrid ItemsSource="{Binding Issues}">
                 <DataGrid.Columns>

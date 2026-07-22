@@ -9,6 +9,8 @@ namespace CreditReporting.Api.Metro2;
 public interface IMetro2Service
 {
     Task<(Metro2File File, List<Metro2ValidationIssueDto> Issues)> BuildFileAsync(Metro2GenerateRequest request, CancellationToken ct = default);
+    /// <summary>Accounts with activity in the window, for the export account picker.</summary>
+    Task<List<Metro2AccountSummaryDto>> ListReportingAccountsAsync(DateTime? fromDate, DateTime? toDate, CancellationToken ct = default);
     string Serialize(Metro2File file);
     Metro2ParseResponseDto ParseAndValidate(string content);
 }
@@ -38,8 +40,7 @@ public class Metro2Service : IMetro2Service
     public async Task<(Metro2File, List<Metro2ValidationIssueDto>)> BuildFileAsync(
         Metro2GenerateRequest request, CancellationToken ct = default)
     {
-        DateTime to = request.ToDate ?? DateTime.Today;
-        DateTime from = request.FromDate ?? to.AddMonths(-1);
+        var (from, to) = ResolveWindow(request.FromDate, request.ToDate);
 
         var accounts = await _accounts.GetForReportingWindowAsync(from, to, request.AccountIds, ct);
 
@@ -68,6 +69,30 @@ public class Metro2Service : IMetro2Service
         };
 
         return (file, _validator.Validate(file));
+    }
+
+    public async Task<List<Metro2AccountSummaryDto>> ListReportingAccountsAsync(
+        DateTime? fromDate, DateTime? toDate, CancellationToken ct = default)
+    {
+        var (from, to) = ResolveWindow(fromDate, toDate);
+
+        var accounts = await _accounts.GetForReportingWindowAsync(from, to, null, ct);
+        return accounts.Select(a => new Metro2AccountSummaryDto
+        {
+            Id = a.Id,
+            AccountNumberMasked = Masking.MaskAccountNumber(a.AccountNumber),
+            CustomerName = $"{a.Customer.FirstName} {a.Customer.LastName}",
+            AccountType = DtoMapper.SpellOut(a.AccountType),
+            CurrentBalance = a.CurrentBalance
+        }).ToList();
+    }
+
+    /// <summary>Applies the same default window (last month ending today) that generation uses.</summary>
+    private static (DateTime From, DateTime To) ResolveWindow(DateTime? fromDate, DateTime? toDate)
+    {
+        DateTime to = toDate ?? DateTime.Today;
+        DateTime from = fromDate ?? to.AddMonths(-1);
+        return (from, to);
     }
 
     public string Serialize(Metro2File file) => _writer.Write(file);
