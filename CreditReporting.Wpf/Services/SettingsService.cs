@@ -15,6 +15,7 @@ public class AppSettings
     public bool ReportingEnabled { get; set; } = true;
     public string? Metro2DefaultFolderLocation { get; set; }
     public string? FurnisherIdentificationNumber { get; set; }
+    public string? ReporterName { get; set; }
 }
 
 /// <summary>Loads and saves <see cref="AppSettings"/> as JSON under %APPDATA%.</summary>

@@ -9,6 +9,8 @@ public class Metro2GenerateRequest
     public List<int>? AccountIds { get; set; }
     /// <summary>Overrides the furnisher ID stamped on the header and base records; null or empty = the built-in default.</summary>
     public string? FurnisherIdentificationNumber { get; set; }
+    /// <summary>Overrides the reporter name stamped on the header; null or empty = the built-in default.</summary>
+    public string? ReporterName { get; set; }
 }
 
 /// <summary>Returned by the preview endpoint before the file is actually generated.</summary>

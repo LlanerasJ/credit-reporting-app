@@ -36,7 +36,8 @@ public partial class Metro2ExportViewModel : ObservableObject
         ToDate = ToDate.Date,
         // Read on every request so preview and generate agree, and so an edit in
         // Settings takes effect without reopening this screen.
-        FurnisherIdentificationNumber = _settings.Current.FurnisherIdentificationNumber
+        FurnisherIdentificationNumber = _settings.Current.FurnisherIdentificationNumber,
+        ReporterName = _settings.Current.ReporterName
     };
 
     [RelayCommand]
