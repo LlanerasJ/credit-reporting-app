@@ -31,6 +31,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _tokenExpiryMessage = "";
     [ObservableProperty] private string _metro2DefaultFolderLocation = "";
     [ObservableProperty] private string _furnisherIdentificationNumber = "";
+    [ObservableProperty] private string _reporterName = "";
 
     public SettingsViewModel(SettingsService settings, ApiService api)
     {
@@ -45,6 +46,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         _reportingEnabled = settings.Current.ReportingEnabled;
         _metro2DefaultFolderLocation = settings.Current.Metro2DefaultFolderLocation ?? "";
         _furnisherIdentificationNumber = settings.Current.FurnisherIdentificationNumber ?? "";
+        _reporterName = settings.Current.ReporterName ?? "";
 
         _expiryTimer.Tick += (_, _) => UpdateTokenExpiry();
         UpdateTokenExpiry();
@@ -92,6 +94,8 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         SaveSettings($"Saved. Metro 2 files will default to {value}.");
     partial void OnFurnisherIdentificationNumberChanged(string value) =>
         SaveSettings($"Saved. Furnisher Identifier will default to {value}.");
+    partial void OnReporterNameChanged(string value) =>
+        SaveSettings($"Saved. Reporter Name will default to {value}.");
 
     private void SaveSettings(string successMessage)
     {
@@ -108,7 +112,8 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
                 Metro2ImportEnabled = Metro2ImportEnabled,
                 ReportingEnabled = ReportingEnabled,
                 Metro2DefaultFolderLocation = Metro2DefaultFolderLocation,
-                FurnisherIdentificationNumber = FurnisherIdentificationNumber
+                FurnisherIdentificationNumber = FurnisherIdentificationNumber,
+                ReporterName = ReporterName
             });
             StatusMessage = successMessage;
         }

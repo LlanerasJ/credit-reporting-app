@@ -1,6 +1,6 @@
 <UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="CreditReporting.Wpf.Views.SettingsView" Height="618" Width="481">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="CreditReporting.Wpf.Views.SettingsView" Height="618" Width="498">
     <StackPanel MaxWidth="480" HorizontalAlignment="Left" Margin="10,0,0,10">
         <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
 
@@ -42,8 +42,14 @@
         <TextBlock Text="Metro 2" Style="{StaticResource SectionHeader}" />
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Label Content="Furnisher Identifier" VerticalAlignment="Center"/>
+            <Label Content="Furnisher Identifier" Width="120" VerticalAlignment="Center"/>
             <TextBox Text="{Binding FurnisherIdentificationNumber, Mode=TwoWay}" Width="344"
+                     VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Reporter Name" Width="120" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ReporterName, Mode=TwoWay}" Width="344"
                      VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
         </StackPanel>
 
