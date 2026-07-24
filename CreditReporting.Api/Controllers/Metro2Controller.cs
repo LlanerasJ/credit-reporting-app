@@ -16,6 +16,18 @@ public class Metro2Controller : ControllerBase
     private readonly IMetro2Service _metro2;
     public Metro2Controller(IMetro2Service metro2) => _metro2 = metro2;
 
+    /// <summary>Lists accounts with activity in the window so the client can offer an account picker.</summary>
+    [HttpGet("accounts")]
+    [ProducesResponseType(typeof(List<Metro2AccountSummaryDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<Metro2AccountSummaryDto>>> Accounts(
+        [FromQuery] DateTime? from, [FromQuery] DateTime? to, CancellationToken ct)
+    {
+        if (from is { } f && to is { } t && f > t)
+            return BadRequest(new ProblemDetails { Title = "from must be on or before to." });
+
+        return Ok(await _metro2.ListReportingAccountsAsync(from, to, ct));
+    }
+
     /// <summary>Dry run: record count + validation issues for the selected population, no file produced.</summary>
     [HttpPost("preview")]
     [ProducesResponseType(typeof(Metro2PreviewDto), StatusCodes.Status200OK)]
