@@ -38,7 +38,7 @@
                 <views:ReportingView DataContext="{Binding Reporting}" />
             </TabItem>
             <TabItem Name="SettingsView" Header="Settings" LostFocus="SettingsView_LostFocus">
-                <views:SettingsView DataContext="{Binding Settings}" Height="661" />
+                <views:SettingsView DataContext="{Binding Settings}" />
             </TabItem>
         </TabControl>
     </DockPanel>
