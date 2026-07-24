@@ -9,6 +9,7 @@ namespace CreditReporting.Tests;
 public class Metro2ServiceTests
 {
     private const string DefaultFurnisherId = "DEMOFURN0001";
+    private const string DefaultReporterName = "Demo Data Furnisher Inc";
 
     /// <summary>Serves a configurable set of accounts and honours the account-id filter.</summary>
     private class StubAccountRepository : IAccountRepository
@@ -158,5 +159,36 @@ public class Metro2ServiceTests
                 Assert.Equal("****4321", c.AccountNumberMasked);
                 Assert.Equal("Ben Buyer", c.CustomerName);
             });
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public async Task Falls_back_to_the_default_reporter_name(string? requested)
+    {
+        var (file, _) = await NewService().BuildFileAsync(
+            new Metro2GenerateRequest { ReporterName = requested });
+
+        Assert.Equal(DefaultReporterName, file.Header.ReporterName);
+    }
+
+    [Fact]
+    public async Task Request_reporter_name_overrides_the_default()
+    {
+        var (file, _) = await NewService().BuildFileAsync(
+            new Metro2GenerateRequest { ReporterName = "Acme Data Furnisher LLC" });
+
+        Assert.Equal("Acme Data Furnisher LLC", file.Header.ReporterName);
+    }
+
+    [Fact]
+    public async Task Oversized_reporter_name_does_not_break_fixed_width_layout()
+    {
+        var service = NewService();
+        var (file, _) = await service.BuildFileAsync(
+            new Metro2GenerateRequest { ReporterName = new string('X', 80) });
+
+        var lines = service.Serialize(file)
+            .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        Assert.Equal(Metro2HeaderRecord.RecordLength, lines[0].Length);
+        Assert.Equal(Metro2BaseRecord.RecordLength, lines[1].Length);
     }
 }

@@ -22,7 +22,7 @@ public interface IMetro2Service
 public class Metro2Service : IMetro2Service
 {
     private string FurnisherId = "DEMOFURN0001";
-    private const string ReporterName = "Demo Data Furnisher Inc";
+    private string ReporterName = "Demo Data Furnisher Inc";
 
     private readonly IAccountRepository _accounts;
     private readonly IMetro2Writer _writer;
@@ -47,6 +47,11 @@ public class Metro2Service : IMetro2Service
         if (!string.IsNullOrEmpty(request.FurnisherIdentificationNumber))
         {
             FurnisherId = request.FurnisherIdentificationNumber;
+        }
+
+        if (!string.IsNullOrEmpty(request.ReporterName))
+        {
+            ReporterName = request.ReporterName;
         }
 
         var file = new Metro2File
