@@ -159,6 +159,8 @@ public class Metro2ServiceTests
                 Assert.Equal("****4321", c.AccountNumberMasked);
                 Assert.Equal("Ben Buyer", c.CustomerName);
             });
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
