@@ -3,7 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="CreditReporting.Wpf.Views.SettingsView">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
     <StackPanel MaxWidth="480" HorizontalAlignment="Left" Margin="10,0,0,10">
-        <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="Connection" Style="{StaticResource SectionHeader}" />
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="API Base URL" Width="120" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ApiBaseURL, Mode=TwoWay}" Width="344"
+            VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Request Timeout (seconds)" Width="154" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ApiRequestTimeout, Mode=TwoWay}" Width="35"
+            VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
+        </StackPanel>
+
+            <CheckBox Content="Trust invalid TLS cert"
+          IsChecked="{Binding TrustInvalidTLSCert}"
+          Margin="0,4,0,10" />
+
+            <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
 
         <CheckBox Content="Automatically sign out after a period of inactivity"
                   IsChecked="{Binding AutoTimeoutEnabled}"
@@ -55,8 +73,8 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Label Content="Default save folder" VerticalAlignment="Center"/>
-            <TextBox x:Name="FilePathTextBox" Text="{Binding Metro2DefaultFolderLocation, Mode=TwoWay}" Width="240" IsReadOnly="True"
+            <Label Content="Default save folder" VerticalAlignment="Center" Width="121"/>
+            <TextBox x:Name="FilePathTextBox" Text="{Binding Metro2DefaultFolderLocation, Mode=TwoWay}" Width="242" IsReadOnly="True"
                      VerticalContentAlignment="Center" Margin="8,0"/>
             <Button Click="BrowseFolder_Click" Content="Browse..." VerticalAlignment="Center"/>
         </StackPanel>

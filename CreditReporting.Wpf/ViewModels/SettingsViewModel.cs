@@ -32,6 +32,9 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _metro2DefaultFolderLocation = "";
     [ObservableProperty] private string _furnisherIdentificationNumber = "";
     [ObservableProperty] private string _reporterName = "";
+    [ObservableProperty] private string _apiBaseURL = "";
+    [ObservableProperty] private string _apiRequestTimeout = "";
+    [ObservableProperty] private bool _trustInvalidTLSCert;
 
     public SettingsViewModel(SettingsService settings, ApiService api)
     {
@@ -47,6 +50,9 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         _metro2DefaultFolderLocation = settings.Current.Metro2DefaultFolderLocation ?? "";
         _furnisherIdentificationNumber = settings.Current.FurnisherIdentificationNumber ?? "";
         _reporterName = settings.Current.ReporterName ?? "";
+        _apiBaseURL = settings.Current.APIBaseURL ?? "";
+        _apiRequestTimeout = settings.Current.APIRequestTimeout ?? "";
+        _trustInvalidTLSCert = settings.Current.TrustInvalidTLSCert;
 
         _expiryTimer.Tick += (_, _) => UpdateTokenExpiry();
         UpdateTokenExpiry();
@@ -96,6 +102,12 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         SaveSettings($"Saved. Furnisher Identifier will default to {value}.");
     partial void OnReporterNameChanged(string value) =>
         SaveSettings($"Saved. Reporter Name will default to {value}.");
+    partial void OnApiBaseURLChanged(string value) =>
+        SaveSettings($"Saved. API base URL will default to {value}.");
+    partial void OnApiRequestTimeoutChanged(string value) =>
+        SaveSettings($"Saved. API timeout will default to {value}.");
+    partial void OnTrustInvalidTLSCertChanged(bool value) =>
+        SaveSettings(value ? "Saved. Trust invalid TLS cert enabled." : "Saved. Trust invalid TLS cert disabled.");
 
     private void SaveSettings(string successMessage)
     {
@@ -113,7 +125,10 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
                 ReportingEnabled = ReportingEnabled,
                 Metro2DefaultFolderLocation = Metro2DefaultFolderLocation,
                 FurnisherIdentificationNumber = FurnisherIdentificationNumber,
-                ReporterName = ReporterName
+                ReporterName = ReporterName,
+                APIBaseURL = ApiBaseURL,
+                APIRequestTimeout = ApiRequestTimeout,
+                TrustInvalidTLSCert = TrustInvalidTLSCert,
             });
             StatusMessage = successMessage;
         }

@@ -16,6 +16,10 @@ public class AppSettings
     public string? Metro2DefaultFolderLocation { get; set; }
     public string? FurnisherIdentificationNumber { get; set; }
     public string? ReporterName { get; set; }
+    public string? APIBaseURL { get; set; }
+    public string? APIRequestTimeout { get; set; }
+    public bool TrustInvalidTLSCert { get; set; } = false;
+
 }
 
 /// <summary>Loads and saves <see cref="AppSettings"/> as JSON under %APPDATA%.</summary>
