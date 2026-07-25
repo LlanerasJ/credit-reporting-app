@@ -30,14 +30,40 @@ public class ApiService
     public DateTime? TokenExpiresAtUtc { get; private set; }
     public bool IsAuthenticated => _http.DefaultRequestHeaders.Authorization is not null;
 
-    public ApiService(string baseUrl = "http://localhost:5006")
+    private const string DefaultBaseUrl = "http://localhost:5006";
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+
+    public ApiService(AppSettings? settings = null)
     {
-        _http = new HttpClient
+        settings ??= new AppSettings();
+
+        var handler = new HttpClientHandler();
+        if (settings.TrustInvalidTLSCert)
         {
-            BaseAddress = new Uri(baseUrl),
-            Timeout = TimeSpan.FromSeconds(30)
+            // Accept any server certificate. Intended only for reaching a dev API over
+            // self-signed HTTPS; has no effect on plain HTTP.
+            handler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        }
+
+        _http = new HttpClient(handler)
+        {
+            BaseAddress = ResolveBaseUrl(settings.APIBaseURL),
+            Timeout = ResolveTimeout(settings.APIRequestTimeout)
         };
     }
+
+    // A bad or empty saved value must not crash startup, so fall back to the default.
+    private static Uri ResolveBaseUrl(string? configured) =>
+        Uri.TryCreate(configured, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+                ? uri
+                : new Uri(DefaultBaseUrl);
+
+    private static TimeSpan ResolveTimeout(string? configured) =>
+        int.TryParse(configured, out int seconds) && seconds > 0
+            ? TimeSpan.FromSeconds(seconds)
+            : DefaultTimeout;
 
     public void Logout()
     {

@@ -103,11 +103,12 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     partial void OnReporterNameChanged(string value) =>
         SaveSettings($"Saved. Reporter Name will default to {value}.");
     partial void OnApiBaseURLChanged(string value) =>
-        SaveSettings($"Saved. API base URL will default to {value}.");
+        SaveSettings("Saved. The API base URL takes effect the next time the app starts.");
     partial void OnApiRequestTimeoutChanged(string value) =>
-        SaveSettings($"Saved. API timeout will default to {value}.");
+        SaveSettings("Saved. The API request timeout takes effect the next time the app starts.");
     partial void OnTrustInvalidTLSCertChanged(bool value) =>
-        SaveSettings(value ? "Saved. Trust invalid TLS cert enabled." : "Saved. Trust invalid TLS cert disabled.");
+        SaveSettings((value ? "Saved. Invalid TLS certificates will be trusted" : "Saved. Invalid TLS certificates will be rejected")
+            + " the next time the app starts.");
 
     private void SaveSettings(string successMessage)
     {

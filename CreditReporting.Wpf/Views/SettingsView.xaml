@@ -8,20 +8,20 @@
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Label Content="API Base URL" Width="120" VerticalAlignment="Center"/>
             <TextBox Text="{Binding ApiBaseURL, Mode=TwoWay}" Width="344"
-            VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
+                     VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
             <Label Content="Request Timeout (seconds)" Width="154" VerticalAlignment="Center"/>
             <TextBox Text="{Binding ApiRequestTimeout, Mode=TwoWay}" Width="35"
-            VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
+                     VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
         </StackPanel>
 
-            <CheckBox Content="Trust invalid TLS cert"
-          IsChecked="{Binding TrustInvalidTLSCert}"
-          Margin="0,4,0,10" />
+        <CheckBox Content="Trust invalid TLS cert"
+                  IsChecked="{Binding TrustInvalidTLSCert}"
+                  Margin="0,4,0,10" />
 
-            <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
+        <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
 
         <CheckBox Content="Automatically sign out after a period of inactivity"
                   IsChecked="{Binding AutoTimeoutEnabled}"
