@@ -32,6 +32,10 @@ You'll need the .NET 8 SDK and SQL Server LocalDB (`sqllocaldb info` should list
 `MSSQLLocalDB`; it ships with Visual Studio).
 
 ```powershell
+# One-time setup: the API needs a JWT signing key, which is not checked in.
+# Any random value of 32 characters or more works.
+dotnet user-secrets set "Jwt:Key" "replace-me-with-32-or-more-random-characters" --project CreditReporting.Api
+
 # Start the API. It creates and seeds the CreditReportingDemo database on first run.
 dotnet run --project CreditReporting.Api --launch-profile http
 # Swagger is at http://localhost:5006/swagger
@@ -100,6 +104,8 @@ into readable messages.
 - The database is created with `EnsureCreated()` and a deterministic seeder
   rather than migrations, which keeps the demo self-contained. Drop the
   `CreditReportingDemo` LocalDB database to reset it.
-- The JWT signing key sits in `appsettings.json` for convenience. A real
-  deployment would keep it in user-secrets or a key vault.
+- The JWT signing key is never checked in. Local development reads it from
+  user-secrets (`Jwt:Key`); other machines can supply the
+  `CREDITREPORTING_JWT_KEY` environment variable instead. The API refuses to
+  start without one. A real deployment would use a key vault.
 - The API runs over plain HTTP on `localhost:5006` so the client needs no config.

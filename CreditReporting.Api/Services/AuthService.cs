@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using CreditReporting.Api.Data;
 using CreditReporting.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +17,13 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
     private readonly IConfiguration _config;
+    private readonly SymmetricSecurityKey _signingKey;
 
-    public AuthService(AppDbContext db, IConfiguration config)
+    public AuthService(AppDbContext db, IConfiguration config, SymmetricSecurityKey signingKey)
     {
         _db = db;
         _config = config;
+        _signingKey = signingKey;
     }
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default)
@@ -34,7 +35,6 @@ public class AuthService : IAuthService
             return null;
 
         var jwt = _config.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
         var expires = DateTime.UtcNow.AddHours(8);
 
         var token = new JwtSecurityToken(
@@ -47,7 +47,7 @@ public class AuthService : IAuthService
                 new Claim("displayName", user.DisplayName)
             },
             expires: expires,
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+            signingCredentials: new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256));
 
         return new LoginResponse(
             new JwtSecurityTokenHandler().WriteToken(token),
