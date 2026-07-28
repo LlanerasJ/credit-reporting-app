@@ -1,4 +1,3 @@
-using System.Text;
 using CreditReporting.Api.Data;
 using CreditReporting.Api.Metro2;
 using CreditReporting.Api.Reports;
@@ -40,8 +39,11 @@ builder.Services.AddSingleton<IMetro2Parser, Metro2Parser>();
 builder.Services.AddSingleton<IMetro2Validator, Metro2Validator>();
 builder.Services.AddScoped<IMetro2Service, Metro2Service>();
 
-// JWT auth
+// JWT auth. The signing key comes from user-secrets or an environment variable,
+// never appsettings.json; resolving it here fails startup if it is missing.
 var jwt = builder.Configuration.GetSection("Jwt");
+var signingKey = JwtSigningKey.Resolve(builder.Configuration);
+builder.Services.AddSingleton(signingKey);
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -54,7 +56,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwt["Issuer"],
             ValidAudience = jwt["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!))
+            IssuerSigningKey = signingKey
         };
     });
 builder.Services.AddAuthorization();
