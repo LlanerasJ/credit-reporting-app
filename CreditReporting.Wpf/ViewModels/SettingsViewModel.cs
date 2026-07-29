@@ -32,6 +32,10 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _metro2DefaultFolderLocation = "";
     [ObservableProperty] private string _furnisherIdentificationNumber = "";
     [ObservableProperty] private string _reporterName = "";
+    // Held as text so an unparseable entry can be reported instead of silently ignored.
+    [ObservableProperty] private string _apiBaseUrl = "";
+    [ObservableProperty] private string _apiTimeoutSeconds = "";
+    [ObservableProperty] private bool _trustInvalidTlsCertificate;
 
     public SettingsViewModel(SettingsService settings, ApiService api)
     {
@@ -47,6 +51,9 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         _metro2DefaultFolderLocation = settings.Current.Metro2DefaultFolderLocation ?? "";
         _furnisherIdentificationNumber = settings.Current.FurnisherIdentificationNumber ?? "";
         _reporterName = settings.Current.ReporterName ?? "";
+        _apiBaseUrl = settings.Current.ApiBaseUrl;
+        _apiTimeoutSeconds = settings.Current.ApiTimeoutSeconds.ToString();
+        _trustInvalidTlsCertificate = settings.Current.TrustInvalidTlsCertificate;
 
         _expiryTimer.Tick += (_, _) => UpdateTokenExpiry();
         UpdateTokenExpiry();
@@ -96,6 +103,32 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
         SaveSettings($"Saved. Furnisher Identifier will default to {value}.");
     partial void OnReporterNameChanged(string value) =>
         SaveSettings($"Saved. Reporter Name will default to {value}.");
+    partial void OnTrustInvalidTlsCertificateChanged(bool value) => SaveSettings(value
+        ? "Saved. Invalid TLS certificates will be accepted."
+        : "Saved. Invalid TLS certificates will be rejected.");
+
+    // The two text settings are only persisted once they parse, so a half-typed or
+    // invalid entry leaves the working value in place instead of breaking API calls.
+    partial void OnApiBaseUrlChanged(string value)
+    {
+        if (!AppSettings.IsValidApiBaseUrl(value))
+        {
+            StatusMessage = $"Not saved. Enter an absolute http or https URL, for example {AppSettings.DefaultApiBaseUrl}.";
+            return;
+        }
+        SaveSettings($"Saved. The client now calls {value}.");
+    }
+
+    partial void OnApiTimeoutSecondsChanged(string value)
+    {
+        if (!int.TryParse(value, out int seconds) || !AppSettings.IsValidApiTimeout(seconds))
+        {
+            StatusMessage = "Not saved. Enter a whole number of seconds between " +
+                $"{AppSettings.MinApiTimeoutSeconds} and {AppSettings.MaxApiTimeoutSeconds}.";
+            return;
+        }
+        SaveSettings($"Saved. API requests now time out after {seconds} second(s).");
+    }
 
     private void SaveSettings(string successMessage)
     {
@@ -113,7 +146,16 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
                 ReportingEnabled = ReportingEnabled,
                 Metro2DefaultFolderLocation = Metro2DefaultFolderLocation,
                 FurnisherIdentificationNumber = FurnisherIdentificationNumber,
-                ReporterName = ReporterName
+                ReporterName = ReporterName,
+                // Saving an unrelated setting must not persist a Connection box that
+                // currently holds invalid text, so those keep their last good value.
+                ApiBaseUrl = AppSettings.IsValidApiBaseUrl(ApiBaseUrl)
+                    ? ApiBaseUrl
+                    : _settings.Current.ApiBaseUrl,
+                ApiTimeoutSeconds = int.TryParse(ApiTimeoutSeconds, out int timeout) && AppSettings.IsValidApiTimeout(timeout)
+                    ? timeout
+                    : _settings.Current.ApiTimeoutSeconds,
+                TrustInvalidTlsCertificate = TrustInvalidTlsCertificate,
             });
             StatusMessage = successMessage;
         }
