@@ -23,22 +23,28 @@ public class ApiException : Exception
 /// </summary>
 public class ApiService
 {
-    private readonly HttpClient _http;
+    private readonly SettingsService _settings;
+    private HttpClient _http;
+    private bool _trustsInvalidCertificates;
 
     public string? Username { get; private set; }
     public string? Role { get; private set; }
     public DateTime? TokenExpiresAtUtc { get; private set; }
     public bool IsAuthenticated => _http.DefaultRequestHeaders.Authorization is not null;
 
-    private const string DefaultBaseUrl = "http://localhost:5006";
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
-
-    public ApiService(AppSettings? settings = null)
+    public ApiService(SettingsService settings)
     {
-        settings ??= new AppSettings();
+        _settings = settings;
+        _http = CreateClient(settings.Current);
+        settings.SettingsChanged += (_, _) => ApplyConnectionSettings();
+    }
+
+    private HttpClient CreateClient(AppSettings settings)
+    {
+        _trustsInvalidCertificates = settings.TrustInvalidTlsCertificate;
 
         var handler = new HttpClientHandler();
-        if (settings.TrustInvalidTLSCert)
+        if (_trustsInvalidCertificates)
         {
             // Accept any server certificate. Intended only for reaching a dev API over
             // self-signed HTTPS; has no effect on plain HTTP.
@@ -46,24 +52,46 @@ public class ApiService
                 HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
         }
 
-        _http = new HttpClient(handler)
+        return new HttpClient(handler)
         {
-            BaseAddress = ResolveBaseUrl(settings.APIBaseURL),
-            Timeout = ResolveTimeout(settings.APIRequestTimeout)
+            BaseAddress = ResolveBaseUrl(settings.ApiBaseUrl),
+            Timeout = TimeSpan.FromSeconds(settings.ApiTimeoutSeconds)
         };
     }
 
-    // A bad or empty saved value must not crash startup, so fall back to the default.
-    private static Uri ResolveBaseUrl(string? configured) =>
-        Uri.TryCreate(configured, UriKind.Absolute, out var uri)
-            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-                ? uri
-                : new Uri(DefaultBaseUrl);
+    /// <summary>
+    /// Rebuilds the HttpClient when a Connection setting changes, so the new values
+    /// apply without a restart. The signed-in session carries over to the new client.
+    /// </summary>
+    private void ApplyConnectionSettings()
+    {
+        AppSettings settings = _settings.Current;
+        if (_http.BaseAddress == ResolveBaseUrl(settings.ApiBaseUrl)
+            && _http.Timeout == TimeSpan.FromSeconds(settings.ApiTimeoutSeconds)
+            && _trustsInvalidCertificates == settings.TrustInvalidTlsCertificate)
+        {
+            // Saving any other setting also raises the event; leave the client alone.
+            return;
+        }
 
-    private static TimeSpan ResolveTimeout(string? configured) =>
-        int.TryParse(configured, out int seconds) && seconds > 0
-            ? TimeSpan.FromSeconds(seconds)
-            : DefaultTimeout;
+        HttpClient replacement = CreateClient(settings);
+        replacement.DefaultRequestHeaders.Authorization = _http.DefaultRequestHeaders.Authorization;
+
+        HttpClient previous = _http;
+        _http = replacement;
+        previous.Dispose();
+    }
+
+    // BaseAddress only combines with a relative path when it ends in a slash, so
+    // "http://host/api" would otherwise silently drop its last segment.
+    private static Uri ResolveBaseUrl(string configured)
+    {
+        if (!AppSettings.IsValidApiBaseUrl(configured))
+            configured = AppSettings.DefaultApiBaseUrl;
+
+        var uri = new Uri(configured, UriKind.Absolute);
+        return uri.AbsolutePath.EndsWith('/') ? uri : new Uri(uri.AbsoluteUri + "/");
+    }
 
     public void Logout()
     {

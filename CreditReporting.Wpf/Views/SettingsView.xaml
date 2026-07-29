@@ -6,19 +6,19 @@
         <TextBlock Text="Connection" Style="{StaticResource SectionHeader}" />
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Label Content="API Base URL" Width="120" VerticalAlignment="Center"/>
-            <TextBox Text="{Binding ApiBaseURL, Mode=TwoWay}" Width="344"
+            <Label Content="API base URL" Width="154" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ApiBaseUrl, Mode=TwoWay}" Width="310"
                      VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Label Content="Request Timeout (seconds)" Width="154" VerticalAlignment="Center"/>
-            <TextBox Text="{Binding ApiRequestTimeout, Mode=TwoWay}" Width="35"
+            <Label Content="Request timeout (seconds)" Width="154" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding ApiTimeoutSeconds, Mode=TwoWay}" Width="60"
                      VerticalContentAlignment="Center" Margin="8,0" Height="30"/>
         </StackPanel>
 
-        <CheckBox Content="Trust invalid TLS cert"
-                  IsChecked="{Binding TrustInvalidTLSCert}"
+        <CheckBox Content="Trust invalid TLS certificates (only applies to https URLs)"
+                  IsChecked="{Binding TrustInvalidTlsCertificate}"
                   Margin="0,4,0,10" />
 
         <TextBlock Text="Session" Style="{StaticResource SectionHeader}" />
