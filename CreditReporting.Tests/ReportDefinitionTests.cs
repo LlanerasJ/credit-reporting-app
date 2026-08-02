@@ -116,4 +116,49 @@ public class ReportDefinitionTests
         Assert.Equal("0", byBand["Poor"][2]);      // old 560 score no longer counted
         Assert.Equal("", byBand["Poor"][3]);       // empty average for empty band
     }
+
+    [Fact]
+    public async Task InquiryActivity_filters_by_type_and_date_range()
+    {
+        using var db = NewDb();
+        var texan = new Customer { FirstName = "Ava", LastName = "Testman", State = "TX", SsnLast4 = "1000" };
+        texan.Inquiries.Add(new CreditInquiry
+        {
+            PulledDate = new DateTime(2026, 7, 1), InquiryType = "Hard",
+            Purpose = "Credit application", PulledBy = "First Demo Bank"
+        });
+        texan.Inquiries.Add(new CreditInquiry
+        {
+            PulledDate = new DateTime(2026, 7, 3), InquiryType = "Soft",
+            Purpose = "Account review", PulledBy = "Acme Card Services"
+        });
+        var ohioan = new Customer { FirstName = "Liam", LastName = "Sampleton", State = "OH", SsnLast4 = "1001" };
+        ohioan.Inquiries.Add(new CreditInquiry
+        {
+            PulledDate = new DateTime(2026, 7, 2), InquiryType = "Hard",
+            Purpose = "Credit application", PulledBy = "Mock Mortgage Co"
+        });
+        db.Customers.AddRange(texan, ohioan);
+        db.SaveChanges();
+
+        var report = new InquiryActivityReport(db);
+
+        var all = await report.ExecuteAsync(Bind(report, new()));
+        Assert.Equal(3, all.RowCount);
+        Assert.Equal("Ava Testman", all.Rows[0][0]); // newest first: the July 3 soft pull
+        Assert.Equal("2026-07-03", all.Rows[0][2]);
+        Assert.Equal("Acme Card Services", all.Rows[0][5]);
+
+        // Choice values bind case-insensitively, so "hard" still matches "Hard"
+        var hard = await report.ExecuteAsync(Bind(report, new() { ["inquiryType"] = "hard" }));
+        Assert.Equal(2, hard.RowCount);
+        Assert.All(hard.Rows, r => Assert.Equal("Hard", r[3]));
+
+        // "to" is inclusive: inquiries on July 2 itself are kept
+        var range = await report.ExecuteAsync(Bind(report,
+            new() { ["from"] = "2026-07-02", ["to"] = "2026-07-02" }));
+        Assert.Single(range.Rows);
+        Assert.Equal("Liam Sampleton", range.Rows[0][0]);
+        Assert.Equal("OH", range.Rows[0][1]);
+    }
 }

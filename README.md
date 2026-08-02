@@ -64,7 +64,7 @@ require it. Passwords are stored as PBKDF2 hashes.
 
 **Reporting** (`CreditReporting.Api/Reports/`). A curated catalog of business
 reports (delinquent accounts, portfolio summary, audit activity, score
-distribution). Each report type is one `IReportDefinition` class that declares
+distribution, inquiry activity). Each report type is one `IReportDefinition` class that declares
 its parameters and runs a reviewed, masked EF query — the client renders the
 parameter inputs generically from `GET /api/reports/catalog`, so adding a
 report is one server-side class plus a DI registration. `POST /api/reports/run`
