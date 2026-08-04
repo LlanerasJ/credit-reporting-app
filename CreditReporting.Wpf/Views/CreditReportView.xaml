@@ -117,6 +117,7 @@
                     <DataGridTextColumn Header="Date" Binding="{Binding PaymentDate, StringFormat=MMM yyyy}" Width="Auto" />
                     <DataGridTextColumn Header="Balance" Binding="{Binding Balance, StringFormat=C2}" Width="*" />
                     <DataGridTextColumn Header="Paid" Binding="{Binding AmountPaid, StringFormat=C2}" Width="*" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding PaymentType}" Width="Auto" />
                     <DataGridTextColumn Header="Days Late" Binding="{Binding DaysLate}" Width="Auto" />
                     <DataGridTextColumn Header="Rating" Binding="{Binding PaymentRating}" Width="Auto" />
                 </DataGrid.Columns>

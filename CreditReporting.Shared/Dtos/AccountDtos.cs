@@ -28,6 +28,8 @@ public class PaymentHistoryDto
     public decimal Balance { get; set; }
     public decimal AmountPaid { get; set; }
     public int DaysLate { get; set; }
+    /// <summary>How the payment was made, e.g. "Auto-Pay". Empty for months with no payment.</summary>
+    public string PaymentType { get; set; } = "";
     /// <summary>Metro 2-style rating: 0 = current, 1 = 30-59, 2 = 60-89, ...</summary>
     public string PaymentRating { get; set; } = "0";
 }
