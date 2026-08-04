@@ -9,7 +9,7 @@ public class CustomerRepository : ICustomerRepository
     private readonly AppDbContext _db;
     public CustomerRepository(AppDbContext db) => _db = db;
 
-    public async Task<List<Customer>> SearchAsync(string? name, string? ssnLast4, CancellationToken ct = default)
+    public async Task<List<Customer>> SearchAsync(string? name, string? ssnLast4, string? state, CancellationToken ct = default)
     {
         IQueryable<Customer> query = _db.Customers.AsNoTracking().Include(c => c.Accounts);
 
@@ -24,6 +24,12 @@ public class CustomerRepository : ICustomerRepository
 
         if (!string.IsNullOrWhiteSpace(ssnLast4))
             query = query.Where(c => c.SsnLast4 == ssnLast4.Trim());
+
+        if (!string.IsNullOrWhiteSpace(state))
+        {
+            string normalizedState = state.Trim().ToUpperInvariant();
+            query = query.Where(c => c.State == normalizedState);
+        }
 
         return await query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName)
                           .Take(100)
