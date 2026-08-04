@@ -184,6 +184,27 @@ public static class DbSeeder
         return account;
     }
 
+    // A loan is usually set up once and drafted; a card gets paid by hand each month.
+    private static readonly PaymentType[] InstallmentMethods =
+        { PaymentType.AutoPay, PaymentType.AutoPay, PaymentType.Ach, PaymentType.Transfer };
+    private static readonly PaymentType[] RevolvingMethods =
+        { PaymentType.DebitCard, PaymentType.Ach, PaymentType.Check, PaymentType.DebitCard };
+
+    // Deviations are one-off payments, so AutoPay is excluded: it is recurring by definition.
+    private static readonly PaymentType[] OneOffMethods =
+        { PaymentType.Ach, PaymentType.DebitCard, PaymentType.CreditCard,
+          PaymentType.Check, PaymentType.Cash, PaymentType.Transfer };
+
+    /// <summary>
+    /// Picks how one month was paid. People mostly pay the same way every month, so
+    /// the account's usual method wins unless this is one of the occasional one-offs.
+    /// A month with no payment has no method.
+    /// </summary>
+    private static PaymentType ChoosePaymentType(Random rng, decimal amountPaid, PaymentType usual) =>
+        amountPaid <= 0m ? PaymentType.Unknown
+        : rng.NextDouble() < 0.85 ? usual
+        : OneOffMethods[rng.Next(OneOffMethods.Length)];
+
     /// <summary>
     /// Amortizes a loan from its original principal. The balance declines each
     /// month and AmountPaid matches the scheduled annuity payment (doubled the
@@ -207,6 +228,7 @@ public static class DbSeeder
         int lateStreak = 0;
         bool owesCatchUp = false;
         bool paidOff = false;
+        PaymentType usualMethod = InstallmentMethods[rng.Next(InstallmentMethods.Length)];
 
         for (int m = 23; m >= 0; m--)
         {
@@ -254,6 +276,7 @@ public static class DbSeeder
                 Balance = Math.Round((decimal)balance, 2),
                 AmountPaid = Math.Round((decimal)paid, 2),
                 DaysLate = daysLate,
+                PaymentType = ChoosePaymentType(rng, (decimal)paid, usualMethod),
                 PaymentRating = Math.Min(daysLate / 30, 6).ToString()
             });
         }
@@ -275,6 +298,7 @@ public static class DbSeeder
         decimal pastDue = 0m;
         int lateStreak = 0;
         bool paidOff = false;
+        PaymentType usualMethod = RevolvingMethods[rng.Next(RevolvingMethods.Length)];
 
         for (int m = 23; m >= 0; m--)
         {
@@ -330,6 +354,7 @@ public static class DbSeeder
                 Balance = Math.Round(balance, 2),
                 AmountPaid = Math.Round(paid, 2),
                 DaysLate = daysLate,
+                PaymentType = ChoosePaymentType(rng, paid, usualMethod),
                 PaymentRating = Math.Min(daysLate / 30, 6).ToString()
             });
         }

@@ -57,6 +57,7 @@ public static class DtoMapper
                 Balance = p.Balance,
                 AmountPaid = p.AmountPaid,
                 DaysLate = p.DaysLate,
+                PaymentType = SpellOut(p.PaymentType),
                 PaymentRating = p.PaymentRating
             }).ToList()
     };
@@ -108,5 +109,19 @@ public static class DtoMapper
         AccountStatus.ChargeOff => "Charge-Off",
         AccountStatus.Collection => "Collection",
         _ => s.ToString()
+    };
+
+    /// <summary>Unknown maps to "" so a month with no payment reads as blank rather than as lost data.</summary>
+    public static string SpellOut(PaymentType t) => t switch
+    {
+        PaymentType.Unknown => "",
+        PaymentType.Ach => "ACH",
+        PaymentType.AutoPay => "Auto-Pay",
+        PaymentType.DebitCard => "Debit Card",
+        PaymentType.CreditCard => "Credit Card",
+        PaymentType.Check => "Check",
+        PaymentType.Cash => "Cash",
+        PaymentType.Transfer => "Transfer",
+        _ => t.ToString()
     };
 }
