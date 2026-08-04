@@ -13,6 +13,7 @@ public partial class CustomerSearchViewModel : ObservableObject
 
     [ObservableProperty] private string _nameQuery = "";
     [ObservableProperty] private string _ssnLast4Query = "";
+    [ObservableProperty] private string _stateQuery = "";
     [ObservableProperty] private string _statusMessage = "Enter a name or the last 4 digits of an SSN.";
     [ObservableProperty] private bool _isBusy;
 
@@ -31,9 +32,9 @@ public partial class CustomerSearchViewModel : ObservableObject
     [RelayCommand]
     private async Task SearchAsync()
     {
-        if (string.IsNullOrWhiteSpace(NameQuery) && string.IsNullOrWhiteSpace(SsnLast4Query))
+        if (string.IsNullOrWhiteSpace(NameQuery) && string.IsNullOrWhiteSpace(SsnLast4Query) && string.IsNullOrWhiteSpace(StateQuery))
         {
-            StatusMessage = "Enter a name or the last 4 digits of an SSN.";
+            StatusMessage = "Enter a name, the last 4 digits of an SSN, or a state.";
             return;
         }
 
@@ -41,7 +42,7 @@ public partial class CustomerSearchViewModel : ObservableObject
         StatusMessage = "Searching…";
         try
         {
-            var results = await _api.SearchCustomersAsync(NameQuery, SsnLast4Query);
+            var results = await _api.SearchCustomersAsync(NameQuery, SsnLast4Query, StateQuery);
             Results.Clear();
             foreach (var customer in results)
                 Results.Add(customer);

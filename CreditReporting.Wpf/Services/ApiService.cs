@@ -119,11 +119,12 @@ public class ApiService
             _http.PostAsJsonAsync("api/auth/change-password", new ChangePasswordRequest(currentPassword, newPassword)));
     }
 
-    public async Task<List<CustomerSummaryDto>> SearchCustomersAsync(string? name, string? ssnLast4)
+    public async Task<List<CustomerSummaryDto>> SearchCustomersAsync(string? name, string? ssnLast4, string? state)
     {
         var query = new List<string>();
         if (!string.IsNullOrWhiteSpace(name)) query.Add($"name={Uri.EscapeDataString(name)}");
         if (!string.IsNullOrWhiteSpace(ssnLast4)) query.Add($"ssnLast4={Uri.EscapeDataString(ssnLast4)}");
+        if (!string.IsNullOrWhiteSpace(state)) query.Add($"state={Uri.EscapeDataString(state)}");
 
         var response = await SendAsync(() =>
             _http.GetAsync($"api/customers/search?{string.Join("&", query)}"));
