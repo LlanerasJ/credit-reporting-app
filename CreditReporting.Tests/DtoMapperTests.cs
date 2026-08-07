@@ -57,4 +57,47 @@ public class DtoMapperTests
         Assert.Equal("", dto.PaymentHistory[0].PaymentType);
         Assert.Equal("Auto-Pay", dto.PaymentHistory[1].PaymentType);
     }
+
+    [Theory]
+    [InlineData("C", "Line of Credit")]
+    [InlineData("I", "Installment")]
+    [InlineData("M", "Mortgage")]
+    [InlineData("O", "Open")]
+    [InlineData("R", "Revolving")]
+    public void SpellOut_expands_portfolio_type(string code, string expected) =>
+        Assert.Equal(expected, DtoMapper.SpellOutPortfolioType(code));
+
+    [Theory]
+    [InlineData("1", "Individual")]
+    [InlineData("2", "Joint")]
+    [InlineData("3", "Authorized User")]
+    [InlineData("5", "Co-Maker")]
+    [InlineData("7", "Maker")]
+    public void SpellOut_expands_ecoa_code(string code, string expected) =>
+        Assert.Equal(expected, DtoMapper.SpellOutEcoaCode(code));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("Q")]
+    public void SpellOut_passes_through_an_unrecognized_portfolio_type(string code) =>
+        Assert.Equal(code, DtoMapper.SpellOutPortfolioType(code));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("8")]
+    public void SpellOut_passes_through_an_unrecognized_ecoa_code(string code) =>
+        Assert.Equal(code, DtoMapper.SpellOutEcoaCode(code));
+
+    [Fact]
+    public void ToDto_spells_out_portfolio_type_and_ecoa_code()
+    {
+        var account = MakeAccount();
+        account.PortfolioType = "I";
+        account.EcoaCode = "2";
+
+        var dto = DtoMapper.ToDto(account);
+
+        Assert.Equal("Installment", dto.PortfolioType);
+        Assert.Equal("Joint", dto.EcoaCode);
+    }
 }

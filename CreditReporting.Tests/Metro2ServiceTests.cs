@@ -193,4 +193,22 @@ public class Metro2ServiceTests
         Assert.Equal(Metro2HeaderRecord.RecordLength, lines[0].Length);
         Assert.Equal(Metro2BaseRecord.RecordLength, lines[1].Length);
     }
+
+    /// <summary>
+    /// The export maps these from the entity, not from AccountDto, so the display
+    /// spell-out in DtoMapper must not reach the fixed-width file. See #34.
+    /// </summary>
+    [Fact]
+    public async Task Base_record_keeps_raw_single_character_portfolio_and_ecoa_codes()
+    {
+        var account = MakeAccount(1, "4001123456789", "Ava", "Testman");
+        account.PortfolioType = "R";
+        account.EcoaCode = "1";
+
+        var (file, _) = await NewService(account).BuildFileAsync(new Metro2GenerateRequest());
+
+        var record = Assert.Single(file.BaseRecords);
+        Assert.Equal("R", record.PortfolioType);
+        Assert.Equal("1", record.EcoaCode);
+    }
 }

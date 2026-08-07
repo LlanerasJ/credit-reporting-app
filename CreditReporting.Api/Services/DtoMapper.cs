@@ -39,9 +39,9 @@ public static class DtoMapper
         CustomerId = a.CustomerId,
         AccountNumberMasked = Masking.MaskAccountNumber(a.AccountNumber),
         AccountType = SpellOut(a.AccountType),
-        PortfolioType = a.PortfolioType,
+        PortfolioType = SpellOutPortfolioType(a.PortfolioType),
         Status = SpellOut(a.Status),
-        EcoaCode = a.EcoaCode,
+        EcoaCode = SpellOutEcoaCode(a.EcoaCode),
         OpenDate = a.OpenDate,
         ClosedDate = a.ClosedDate,
         CreditLimit = a.CreditLimit,
@@ -123,5 +123,31 @@ public static class DtoMapper
         PaymentType.Cash => "Cash",
         PaymentType.Transfer => "Transfer",
         _ => t.ToString()
+    };
+
+    /// <summary>
+    /// Metro 2 portfolio type. Named rather than overloaded because this and
+    /// <see cref="SpellOutEcoaCode"/> both take a string. Unrecognized codes pass
+    /// through so an unexpected value stays visible instead of blanking.
+    /// </summary>
+    public static string SpellOutPortfolioType(string code) => code switch
+    {
+        "C" => "Line of Credit",
+        "I" => "Installment",
+        "M" => "Mortgage",
+        "O" => "Open",
+        "R" => "Revolving",
+        _ => code
+    };
+
+    /// <summary>Metro 2 ECOA code. Unrecognized codes pass through, as above.</summary>
+    public static string SpellOutEcoaCode(string code) => code switch
+    {
+        "1" => "Individual",
+        "2" => "Joint",
+        "3" => "Authorized User",
+        "5" => "Co-Maker",
+        "7" => "Maker",
+        _ => code
     };
 }
