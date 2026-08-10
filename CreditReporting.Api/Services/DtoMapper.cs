@@ -33,34 +33,41 @@ public static class DtoMapper
         Email = c.Email
     };
 
-    public static AccountDto ToDto(Account a) => new()
+    public static AccountDto ToDto(Account a)
     {
-        Id = a.Id,
-        CustomerId = a.CustomerId,
-        AccountNumberMasked = Masking.MaskAccountNumber(a.AccountNumber),
-        AccountType = SpellOut(a.AccountType),
-        PortfolioType = SpellOutPortfolioType(a.PortfolioType),
-        Status = SpellOut(a.Status),
-        EcoaCode = SpellOutEcoaCode(a.EcoaCode),
-        OpenDate = a.OpenDate,
-        ClosedDate = a.ClosedDate,
-        CreditLimit = a.CreditLimit,
-        CurrentBalance = a.CurrentBalance,
-        AmountPastDue = a.AmountPastDue,
-        CreditorName = a.CreditorName,
-        PaymentHistoryProfile = BuildPaymentProfile(a),
-        PaymentHistory = a.PaymentHistory
-            .OrderByDescending(p => p.PaymentDate)
-            .Select(p => new PaymentHistoryDto
-            {
-                PaymentDate = p.PaymentDate,
-                Balance = p.Balance,
-                AmountPaid = p.AmountPaid,
-                DaysLate = p.DaysLate,
-                PaymentType = SpellOut(p.PaymentType),
-                PaymentRating = p.PaymentRating
-            }).ToList()
-    };
+        var historyDescending = a.PaymentHistory.OrderByDescending(p => p.PaymentDate).ToList();
+        var lastPayment = historyDescending.FirstOrDefault(p => p.AmountPaid > 0);
+
+        return new()
+        {
+            Id = a.Id,
+            CustomerId = a.CustomerId,
+            AccountNumberMasked = Masking.MaskAccountNumber(a.AccountNumber),
+            AccountType = SpellOut(a.AccountType),
+            PortfolioType = SpellOutPortfolioType(a.PortfolioType),
+            Status = SpellOut(a.Status),
+            EcoaCode = SpellOutEcoaCode(a.EcoaCode),
+            OpenDate = a.OpenDate,
+            ClosedDate = a.ClosedDate,
+            CreditLimit = a.CreditLimit,
+            CurrentBalance = a.CurrentBalance,
+            AmountPastDue = a.AmountPastDue,
+            CreditorName = a.CreditorName,
+            PaymentHistoryProfile = BuildPaymentProfile(a),
+            LastPaymentDate = lastPayment?.PaymentDate,
+            LastPaymentAmount = lastPayment?.AmountPaid ?? 0m,
+            PaymentHistory = historyDescending
+                .Select(p => new PaymentHistoryDto
+                {
+                    PaymentDate = p.PaymentDate,
+                    Balance = p.Balance,
+                    AmountPaid = p.AmountPaid,
+                    DaysLate = p.DaysLate,
+                    PaymentType = SpellOut(p.PaymentType),
+                    PaymentRating = p.PaymentRating
+                }).ToList()
+        };
+    }
 
     public static CreditInquiryDto ToDto(CreditInquiry i) => new()
     {
