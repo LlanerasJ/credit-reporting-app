@@ -100,4 +100,43 @@ public class DtoMapperTests
         Assert.Equal("Installment", dto.PortfolioType);
         Assert.Equal("Joint", dto.EcoaCode);
     }
+
+    [Fact]
+    public void ToDto_reports_the_most_recent_payment_date_and_amount()
+    {
+        var account = MakeAccount(
+            new PaymentRecord { PaymentDate = new DateTime(2024, 1, 15), AmountPaid = 100m },
+            new PaymentRecord { PaymentDate = new DateTime(2024, 2, 15), AmountPaid = 150m });
+
+        var dto = DtoMapper.ToDto(account);
+
+        Assert.Equal(new DateTime(2024, 2, 15), dto.LastPaymentDate);
+        Assert.Equal(150m, dto.LastPaymentAmount);
+    }
+
+    [Fact]
+    public void ToDto_skips_back_to_the_last_real_payment_when_the_newest_month_was_missed()
+    {
+        var account = MakeAccount(
+            new PaymentRecord { PaymentDate = new DateTime(2024, 1, 15), AmountPaid = 100m },
+            new PaymentRecord { PaymentDate = new DateTime(2024, 2, 15), AmountPaid = 0m, DaysLate = 30, PaymentRating = "1" });
+
+        var dto = DtoMapper.ToDto(account);
+
+        Assert.Equal(new DateTime(2024, 1, 15), dto.LastPaymentDate);
+        Assert.Equal(100m, dto.LastPaymentAmount);
+    }
+
+    [Fact]
+    public void ToDto_leaves_last_payment_date_null_when_the_account_has_never_been_paid()
+    {
+        var account = MakeAccount(
+            new PaymentRecord { PaymentDate = new DateTime(2024, 1, 15), AmountPaid = 0m, DaysLate = 30, PaymentRating = "1" },
+            new PaymentRecord { PaymentDate = new DateTime(2024, 2, 15), AmountPaid = 0m, DaysLate = 60, PaymentRating = "2" });
+
+        var dto = DtoMapper.ToDto(account);
+
+        Assert.Null(dto.LastPaymentDate);
+        Assert.Equal(0m, dto.LastPaymentAmount);
+    }
 }

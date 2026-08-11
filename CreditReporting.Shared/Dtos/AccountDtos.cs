@@ -20,6 +20,10 @@ public class AccountDto
 
     /// <summary>Most-recent-first payment rating string, e.g. "000012100...".</summary>
     public string PaymentHistoryProfile { get; set; } = "";
+
+    /// <summary>Date of the most recent history row with AmountPaid > 0. Null if the account has never been paid.</summary>
+    public DateTime? LastPaymentDate { get; set; }
+    public decimal LastPaymentAmount { get; set; }
 }
 
 public class PaymentHistoryDto

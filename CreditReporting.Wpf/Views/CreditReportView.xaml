@@ -90,6 +90,8 @@
                     <DataGridTextColumn Header="Limit" Binding="{Binding CreditLimit, StringFormat=C0}" Width="Auto" />
                     <DataGridTextColumn Header="Balance" Binding="{Binding CurrentBalance, StringFormat=C0}" Width="Auto" />
                     <DataGridTextColumn Header="Past Due" Binding="{Binding AmountPastDue, StringFormat=C0}" Width="Auto" />
+                    <DataGridTextColumn Header="Last Payment" Binding="{Binding LastPaymentDate, StringFormat=d}" Width="Auto" />
+                    <DataGridTextColumn Header="Last Pmt Amt" Binding="{Binding LastPaymentAmount, StringFormat=C0}" Width="Auto" />
                     <DataGridTextColumn Header="History (24 mo)" Binding="{Binding PaymentHistoryProfile}" Width="Auto">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
